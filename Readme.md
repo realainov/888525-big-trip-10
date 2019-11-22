@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Юрий Мамаев](https://up.htmlacademy.ru/ecmascript/10/user/888525).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Колегов](https://htmlacademy.ru/profile/id21780).
 
 ---
 
