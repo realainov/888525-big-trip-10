@@ -20,7 +20,7 @@ const createTemplate = (dateEvents) => {
   const startCity = events[0][0].city;
   const endCity = events[events.length - 1][events[events.length - 1].length - 1].city;
 
-  endDate = endDate.substring(0, 3) === startDate.substring(0, 3) ? endDate.substring(3) : endDate;
+  endDate = endDate.substring(0, 3) === startDate.substring(0, 3) ? endDate.substring(4) : endDate;
 
   const totalPrice = calculateTotalPrice(dateEvents);
 
