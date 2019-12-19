@@ -4,6 +4,10 @@ const calculateTotalPrice = (dateEvents) => {
   Object.values(dateEvents).forEach((event) => {
     event.forEach((point) => {
       totalPrice += point.price;
+
+      point.options.forEach((option) => {
+        totalPrice += option.price;
+      });
     });
   });
 

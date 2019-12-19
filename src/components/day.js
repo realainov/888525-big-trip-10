@@ -3,7 +3,7 @@ import {eventEdit} from "./event-edit";
 import {getMarkupDate} from "../utils";
 
 const createTemplate = (date, indexDate) => {
-  let markup = [];
+  const markup = [];
 
   date.forEach((point, indexPoint) => {
     if (indexDate === 0 && indexPoint === 0) {

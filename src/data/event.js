@@ -1,68 +1,7 @@
-const types = [
-  {
-    pic: `bus`,
-    title: `Bus to`
-  },
-  {
-    pic: `check-in`,
-    title: `Check-in in`
-  },
-  {
-    pic: `drive`,
-    title: `Drive to`
-  },
-  {
-    pic: `flight`,
-    title: `Flight to`
-  },
-  {
-    pic: `restaurant`,
-    title: `Restaurant in`
-  },
-  {
-    pic: `ship`,
-    title: `Ship to`
-  },
-  {
-    pic: `sightseeing`,
-    title: `Sightseeing at`
-  },
-  {
-    pic: `taxi`,
-    title: `Taxi to`
-  },
-  {
-    pic: `train`,
-    title: `Train to`
-  },
-  {
-    pic: `transport`,
-    title: `Transport in`
-  },
-  {
-    pic: `trip`,
-    title: `Trip to`
-  }
-];
-
-const cities = [`Tokyo`, `Kyoto`, `Auckland`, `Los Angeles`, `Christchurch`, `Wellington`, `Naha`];
-
-const descriptions = [
-  `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
-  `Cras aliquet varius magna, non porta ligula feugiat eget.`,
-  `Fusce tristique felis at fermentum pharetra.`,
-  `Aliquam id orci ut lectus varius viverra.`,
-  `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`,
-  `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`,
-  `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.`,
-  `Sed sed nisi sed augue convallis suscipit in sed felis.`,
-  `Aliquam erat volutpat.`,
-  `Nunc fermentum tortor ac porta dapibus.`,
-  `In rutrum ac purus sit amet tempus.`
-];
+import {DESCRIPTIONS, TYPES, CITIES} from "../const";
 
 const generateDescription = () => {
-  return descriptions
+  return DESCRIPTIONS
     .filter(() => Math.random() > 0.5)
     .slice(0, generateNumber(3, 1))
     .join(` `);
@@ -79,7 +18,7 @@ const generateDate = () => {
   return date;
 };
 
-const options = [
+const OPTIONS = [
   {
     name: `Add luggage`,
     type: `luggage`
@@ -99,7 +38,7 @@ const options = [
 ];
 
 const generateOptions = () => {
-  return options
+  return OPTIONS
     .map((item) => {
       return {
         name: item.name,
@@ -134,8 +73,8 @@ const generateEvent = () => {
   [startDate, endDate] = startDate > endDate ? [endDate, startDate] : [startDate, endDate];
 
   return {
-    type: getRandomArrayItem(types),
-    city: getRandomArrayItem(cities),
+    type: getRandomArrayItem(getRandomArrayItem(Object.values(TYPES))),
+    city: getRandomArrayItem(CITIES),
     photos: generatePhotos(),
     description: generateDescription(),
     price: generateNumber(200, 1),

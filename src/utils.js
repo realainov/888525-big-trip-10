@@ -1,11 +1,17 @@
-import {months} from "./const";
+import {MONTHS} from "./const";
 
 export const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : `${value}`;
 };
 
+export const makeWordCapitalize = (string) => {
+  string = string.toString();
+
+  return string[0].toUpperCase() + string.substring(1);
+};
+
 export const getMarkupDate = (point) => {
-  const currentMonth = months[point.time.start.getMonth()].substring(0, 3).toUpperCase();
+  const currentMonth = MONTHS[point.time.start.getMonth()].substring(0, 3).toUpperCase();
   const currentDay = point.time.start.getDate();
 
   return `${currentMonth} ${currentDay}`;

@@ -10,7 +10,7 @@ import {getMarkupDate} from "./utils";
 
 const TASK_COUNT = 4;
 
-let points = generateEvents(TASK_COUNT);
+const points = generateEvents(TASK_COUNT);
 
 points.sort((a, b) => {
   if (a.time.start > b.time.start) {
@@ -24,13 +24,13 @@ points.sort((a, b) => {
   return 0;
 });
 
-let dates = new Set();
+const dates = new Set();
 
 points.forEach((point) => {
   dates.add(getMarkupDate(point));
 });
 
-let dateEvents = {};
+const dateEvents = {};
 
 dates.forEach((date) => {
   dateEvents[date] = [];
