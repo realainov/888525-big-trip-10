@@ -1,3 +1,5 @@
+import {createElement} from "../utils";
+
 const calculateTotalPrice = (dateEvents) => {
   let totalPrice = 0;
 
@@ -41,6 +43,21 @@ const createTemplate = (dateEvents) => {
   );
 };
 
-export const routeInfo = {
-  createTemplate
-};
+export default class RouteInfo {
+  constructor(dateEvents) {
+    this._element = null;
+    this._dateEvents = dateEvents;
+  }
+
+  createElement() {
+    if (!this._element) {
+      this._element = createElement(createTemplate(this._dateEvents));
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

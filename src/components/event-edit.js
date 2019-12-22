@@ -1,4 +1,4 @@
-import {castTimeFormat, makeWordCapitalize} from "../utils";
+import {createElement, castTimeFormat, makeWordCapitalize} from "../utils";
 import {TYPES} from "../const";
 
 const createOptionsMarkup = (options) => {
@@ -161,6 +161,21 @@ const createTemplate = (point) => {
   );
 };
 
-export const eventEdit = {
-  createTemplate
-};
+export default class EventEdit {
+  constructor(point) {
+    this._element = null;
+    this._point = point;
+  }
+
+  createElement() {
+    if (!this._element) {
+      this._element = createElement(createTemplate(this._point));
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

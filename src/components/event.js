@@ -1,4 +1,4 @@
-import {castTimeFormat, calculateDuration} from "../utils";
+import {createElement, castTimeFormat, calculateDuration} from "../utils";
 
 const createOptionsMarkup = (options) => {
   return options
@@ -61,6 +61,25 @@ const createTemplate = (point) => {
   );
 };
 
-export const event = {
-  createTemplate
-};
+export default class Event {
+  constructor(point) {
+    this._element = null;
+    this._point = point;
+  }
+
+  createTemplate() {
+    return createTemplate(this._point);
+  }
+
+  createElement() {
+    if (!this._element) {
+      this._element = createElement(createTemplate(this._point));
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

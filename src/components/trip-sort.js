@@ -1,3 +1,5 @@
+import {createElement} from "../utils";
+
 const createTemplate = () => {
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
@@ -33,6 +35,20 @@ const createTemplate = () => {
   );
 };
 
-export const tripSort = {
-  createTemplate
-};
+export default class TripSort {
+  constructor() {
+    this._element = null;
+  }
+
+  createElement() {
+    if (!this._element) {
+      this._element = createElement(createTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

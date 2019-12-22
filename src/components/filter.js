@@ -1,3 +1,5 @@
+import {createElement} from "../utils";
+
 const createFilterMarkup = (filter, isChecked) => {
   return (
     `<div class="trip-filters__filter">
@@ -26,6 +28,21 @@ const createTemplate = (filters) => {
   );
 };
 
-export const filter = {
-  createTemplate
-};
+export default class Filter {
+  constructor(filters) {
+    this._element = null;
+    this._filters = filters;
+  }
+
+  createElement() {
+    if (!this._element) {
+      this._element = createElement(createTemplate(this._filters));
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

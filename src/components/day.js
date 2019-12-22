@@ -1,18 +1,6 @@
-import {event} from "./event";
-import {eventEdit} from "./event-edit";
-import {getMarkupDate} from "../utils";
+import {createElement, getMarkupDate} from "../utils";
 
 const createTemplate = (date, indexDate) => {
-  const markup = [];
-
-  date.forEach((point, indexPoint) => {
-    if (indexDate === 0 && indexPoint === 0) {
-      markup.push(eventEdit.createTemplate(point));
-    } else {
-      markup.push(event.createTemplate(point));
-    }
-  });
-
   const dateTime = `${date[0].time.start.getFullYear()}-${date[0].time.start.getMonth()}-${date[0].time.start.getDate()}`;
 
   return (
@@ -22,13 +10,27 @@ const createTemplate = (date, indexDate) => {
         <time class="day__date" datetime="${dateTime}">${getMarkupDate(date[0])}</time>
       </div>
 
-      <ul class="trip-events__list">
-        ${markup.join(`\n`)}
-      </ul>
+      <ul class="trip-events__list"></ul>
     </li>`
   );
 };
 
-export const day = {
-  createTemplate
-};
+export default class Day {
+  constructor(date, indexDate) {
+    this._element = null;
+    this._date = date;
+    this._indexDate = indexDate;
+  }
+
+  createElement() {
+    if (!this._element) {
+      this._element = createElement(createTemplate(this._date, this._indexDate));
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
