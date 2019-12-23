@@ -34,8 +34,7 @@ const createTypesMarkup = (types, currentType) => {
 const createTypeGroupMarkup = (types, currentType) => {
   return Object.entries(types)
     .map((group) => {
-      const groupName = group[0];
-      const groupTypes = group[1];
+      const [groupName, groupTypes] = group;
 
       return (
         `<fieldset class="event__type-group">

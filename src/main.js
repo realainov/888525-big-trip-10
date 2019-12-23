@@ -112,15 +112,14 @@ if (Object.keys(dateEvents).length === 0) {
   const tripDaysElement = document.querySelector(`.trip-days`);
 
   Object.entries(dateEvents).forEach((event, indexEvent) => {
-    const dateEvent = event[0];
-    const events = event[1];
+    const [dateEvent, datePoints] = event;
 
     const dayElement = new Day(dateEvents[dateEvent], indexEvent).getElement();
     const tripEventsListElement = dayElement.querySelector(`.trip-events__list`);
 
     render(tripDaysElement, dayElement);
 
-    events.forEach((point) => {
+    datePoints.forEach((point) => {
       renderPoint(point, tripEventsListElement);
     });
   });
