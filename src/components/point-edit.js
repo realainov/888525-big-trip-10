@@ -161,13 +161,13 @@ const createTemplate = (point) => {
   );
 };
 
-export default class EventEdit {
+export default class PointEdit {
   constructor(point) {
     this._element = null;
     this._point = point;
   }
 
-  createElement() {
+  getElement() {
     if (!this._element) {
       this._element = createElement(createTemplate(this._point));
     }

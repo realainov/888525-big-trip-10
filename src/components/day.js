@@ -22,7 +22,7 @@ export default class Day {
     this._indexDate = indexDate;
   }
 
-  createElement() {
+  getElement() {
     if (!this._element) {
       this._element = createElement(createTemplate(this._date, this._indexDate));
     }

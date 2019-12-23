@@ -61,17 +61,17 @@ const createTemplate = (point) => {
   );
 };
 
-export default class Event {
+export default class Point {
   constructor(point) {
     this._element = null;
     this._point = point;
   }
 
-  createTemplate() {
+  getTemplate() {
     return createTemplate(this._point);
   }
 
-  createElement() {
+  getElement() {
     if (!this._element) {
       this._element = createElement(createTemplate(this._point));
     }

@@ -1,7 +1,8 @@
 import Days from './components/days';
 import Day from './components/day';
-import Event from './components/event';
-import EventEdit from './components/event-edit';
+import Point from './components/point';
+import PointEdit from './components/point-edit';
+import NoPoints from './components/no-points';
 import Filter from './components/filter';
 import RouteInfo from './components/route-info';
 import SiteMenu from './components/site-menu';
@@ -13,24 +14,40 @@ import {render, getMarkupDate} from './utils';
 const TASK_COUNT = 4;
 
 const renderPoint = (point, container) => {
-  const eventElement = new Event(point).createElement();
-  const eventEditElement = new EventEdit(point).createElement();
+  const eventElement = new Point(point).getElement();
+  const eventEditElement = new PointEdit(point).getElement();
 
   const openButtonElement = eventElement.querySelector(`.event__rollup-btn`);
   const closeButtonElement = eventEditElement.querySelector(`.event__rollup-btn`);
 
+  const onEscapeKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isEscKey) {
+      container.replaceChild(eventElement, eventEditElement);
+
+      document.removeEventListener(`keydown`, onEscapeKeyDown);
+    }
+  };
+
   openButtonElement.addEventListener(`click`, () => {
     container.replaceChild(eventEditElement, eventElement);
+
+    document.addEventListener(`keydown`, onEscapeKeyDown);
   });
 
   closeButtonElement.addEventListener(`click`, () => {
     container.replaceChild(eventElement, eventEditElement);
+
+    document.removeEventListener(`keydown`, onEscapeKeyDown);
   });
 
   const editFormElement = eventEditElement.querySelector(`form`);
 
   editFormElement.addEventListener(`submit`, () => {
     container.replaceChild(eventElement, eventEditElement);
+
+    document.removeEventListener(`keydown`, onEscapeKeyDown);
   });
 
   render(container, eventElement);
@@ -67,36 +84,44 @@ points.forEach((point) => {
 });
 
 const tripInfoElement = document.querySelector(`.trip-info`);
-const routeInfoElement = new RouteInfo(dateEvents).createElement();
+const routeInfoElement = new RouteInfo(dateEvents).getElement();
 
 render(tripInfoElement, routeInfoElement, `afterbegin`);
 
 const tripControlsHeaderElements = document.querySelectorAll(`.trip-controls h2`);
-const siteMenuElement = new SiteMenu().createElement();
-const filterElement = new Filter(filters).createElement();
+const siteMenuElement = new SiteMenu().getElement();
+const filterElement = new Filter(filters).getElement();
 
 render(tripControlsHeaderElements[0], siteMenuElement, `afterend`);
 render(tripControlsHeaderElements[1], filterElement, `afterend`);
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-const tripSortElement = new TripSort().createElement();
-const daysElement = new Days().createElement();
 
-render(tripEventsElement, tripSortElement);
-render(tripEventsElement, daysElement);
+if (Object.keys(dateEvents).length === 0) {
+  const noPointsElement = new NoPoints().getElement();
 
-const tripDaysElement = document.querySelector(`.trip-days`);
+  render(tripEventsElement, noPointsElement);
+} else {
+  const tripSortElement = new TripSort().getElement();
+  const daysElement = new Days().getElement();
 
-Object.entries(dateEvents).forEach((event, indexEvent) => {
-  const dateEvent = event[0];
-  const events = event[1];
+  render(tripEventsElement, tripSortElement);
 
-  const dayElement = new Day(dateEvents[dateEvent], indexEvent).createElement();
-  const tripEventsListElement = dayElement.querySelector(`.trip-events__list`);
+  render(tripEventsElement, daysElement);
 
-  render(tripDaysElement, dayElement);
+  const tripDaysElement = document.querySelector(`.trip-days`);
 
-  events.forEach((point) => {
-    renderPoint(point, tripEventsListElement);
+  Object.entries(dateEvents).forEach((event, indexEvent) => {
+    const dateEvent = event[0];
+    const events = event[1];
+
+    const dayElement = new Day(dateEvents[dateEvent], indexEvent).getElement();
+    const tripEventsListElement = dayElement.querySelector(`.trip-events__list`);
+
+    render(tripDaysElement, dayElement);
+
+    events.forEach((point) => {
+      renderPoint(point, tripEventsListElement);
+    });
   });
-});
+}
