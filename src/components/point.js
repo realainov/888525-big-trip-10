@@ -1,4 +1,5 @@
-import {createElement, castTimeFormat, calculateDuration} from "../utils";
+import AbstractComponent from './abstract-component';
+import {calculateDuration} from "../utils/common";
 
 const createOptionsMarkup = (options) => {
   return options
@@ -17,8 +18,13 @@ const createOptionsMarkup = (options) => {
 const createTemplate = (point) => {
   const {type, city, price, options, time} = point;
 
-  const startTime = `${castTimeFormat(time.start.getHours())}:${castTimeFormat(time.start.getMinutes())}`;
-  const endTime = `${castTimeFormat(time.end.getHours())}:${castTimeFormat(time.end.getMinutes())}`;
+  const timeOptions = {
+    hour: `numeric`,
+    minute: `numeric`
+  };
+
+  const startTime = time.start.toLocaleString(`en-GB`, timeOptions);
+  const endTime = time.start.toLocaleString(`en-GB`, timeOptions);
 
   const startDateTime = `${time.start.getFullYear()}-${time.start.getMonth()}-${time.start.getDay()}T${startTime}`;
   const endDateTime = `${time.end.getFullYear()}-${time.end.getMonth()}-${time.end.getDay()}T${endTime}`;
@@ -61,9 +67,10 @@ const createTemplate = (point) => {
   );
 };
 
-export default class Point {
+export default class PointComponent extends AbstractComponent {
   constructor(point) {
-    this._element = null;
+    super();
+
     this._point = point;
   }
 
@@ -71,15 +78,7 @@ export default class Point {
     return createTemplate(this._point);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(createTemplate(this._point));
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  get rollupButton() {
+    return this.findElement(`.event__rollup-btn`);
   }
 }

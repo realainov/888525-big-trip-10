@@ -1,4 +1,5 @@
-import {createElement, castTimeFormat, makeWordCapitalize} from "../utils";
+import AbstractComponent from './abstract-component';
+import {makeWordCapitalize} from "../utils/common";
 import {TYPES} from "../const";
 
 const createOptionsMarkup = (options) => {
@@ -60,11 +61,22 @@ const createPhotosMarkup = (photos) => {
 const createTemplate = (point) => {
   const {type, city, photos, description, price, options, time} = point;
 
-  const startDate = `${time.start.getDate()}/${time.start.getMonth() + 1}/${(time.start.getFullYear()).toString().substring(2)}`;
-  const endDate = `${time.end.getDate()}/${time.end.getMonth() + 1}/${time.end.getFullYear().toString().substring(2)}`;
+  const dateOptions = {
+    year: `2-digit`,
+    month: `numeric`,
+    day: `numeric`
+  };
 
-  const startTime = `${castTimeFormat(time.start.getHours())}:${castTimeFormat(time.start.getMinutes())}`;
-  const endTime = `${castTimeFormat(time.end.getHours())}:${castTimeFormat(time.end.getMinutes())}`;
+  const timeOptions = {
+    hour: `numeric`,
+    minute: `numeric`
+  };
+
+  const startDate = time.start.toLocaleString(`en-GB`, dateOptions);
+  const endDate = time.end.toLocaleString(`en-GB`, dateOptions);
+
+  const startTime = time.start.toLocaleString(`en-GB`, timeOptions);
+  const endTime = time.start.toLocaleString(`en-GB`, timeOptions);
 
   const typesMarkup = createTypeGroupMarkup(TYPES, type);
   const optionsMarkup = createOptionsMarkup(options);
@@ -160,21 +172,22 @@ const createTemplate = (point) => {
   );
 };
 
-export default class PointEdit {
+export default class PointEditComponent extends AbstractComponent {
   constructor(point) {
-    this._element = null;
+    super();
+
     this._point = point;
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(createTemplate(this._point));
-    }
-
-    return this._element;
+  getTemplate() {
+    return createTemplate(this._point);
   }
 
-  removeElement() {
-    this._element = null;
+  get rollupButton() {
+    return this.findElement(`.event__rollup-btn`);
+  }
+
+  get editForm() {
+    return this.findElement(`form`);
   }
 }

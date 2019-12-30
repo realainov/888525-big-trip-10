@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import AbstractComponent from './abstract-component';
 
 const calculateTotalPrice = (dateEvents) => {
   let totalPrice = 0;
@@ -51,21 +51,14 @@ const createTemplate = (dateEvents) => {
   }
 };
 
-export default class RouteInfo {
+export default class RouteInfoComponent extends AbstractComponent {
   constructor(dateEvents) {
-    this._element = null;
+    super();
+
     this._dateEvents = dateEvents;
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(createTemplate(this._dateEvents));
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  getTemplate() {
+    return createTemplate(this._dateEvents);
   }
 }

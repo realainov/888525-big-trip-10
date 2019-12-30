@@ -1,57 +1,13 @@
-import Days from './components/days';
-import Day from './components/day';
-import Point from './components/point';
-import PointEdit from './components/point-edit';
-import NoPoints from './components/no-points';
-import Filter from './components/filter';
-import RouteInfo from './components/route-info';
-import SiteMenu from './components/site-menu';
-import TripSort from './components/trip-sort';
+import TripController from './controllers/trip';
+import FilterComponent from './components/filter';
+import SiteMenuComponent from './components/site-menu';
+import RouteInfoComponent from './components/route-info';
 import {filters} from './data/filter';
 import {generateEvents} from './data/event';
-import {render, getMarkupDate} from './utils';
+import {render} from './utils/render';
+import {getMarkupDate} from './utils/common';
 
 const TASK_COUNT = 4;
-
-const renderPoint = (point, container) => {
-  const eventElement = new Point(point).getElement();
-  const eventEditElement = new PointEdit(point).getElement();
-
-  const openButtonElement = eventElement.querySelector(`.event__rollup-btn`);
-  const closeButtonElement = eventEditElement.querySelector(`.event__rollup-btn`);
-
-  const onEscapeKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      container.replaceChild(eventElement, eventEditElement);
-
-      document.removeEventListener(`keydown`, onEscapeKeyDown);
-    }
-  };
-
-  openButtonElement.addEventListener(`click`, () => {
-    container.replaceChild(eventEditElement, eventElement);
-
-    document.addEventListener(`keydown`, onEscapeKeyDown);
-  });
-
-  closeButtonElement.addEventListener(`click`, () => {
-    container.replaceChild(eventElement, eventEditElement);
-
-    document.removeEventListener(`keydown`, onEscapeKeyDown);
-  });
-
-  const editFormElement = eventEditElement.querySelector(`form`);
-
-  editFormElement.addEventListener(`submit`, () => {
-    container.replaceChild(eventElement, eventEditElement);
-
-    document.removeEventListener(`keydown`, onEscapeKeyDown);
-  });
-
-  render(container, eventElement);
-};
 
 const points = generateEvents(TASK_COUNT);
 
@@ -84,43 +40,20 @@ points.forEach((point) => {
 });
 
 const tripInfoElement = document.querySelector(`.trip-info`);
-const routeInfoElement = new RouteInfo(dateEvents).getElement();
 
-render(tripInfoElement, routeInfoElement, `afterbegin`);
+const routeInfoComponent = new RouteInfoComponent(dateEvents);
+
+render(tripInfoElement, routeInfoComponent, `afterbegin`);
 
 const tripControlsHeaderElements = document.querySelectorAll(`.trip-controls h2`);
-const siteMenuElement = new SiteMenu().getElement();
-const filterElement = new Filter(filters).getElement();
+const siteMenuComponent = new SiteMenuComponent();
+const filterComponent = new FilterComponent(filters);
 
-render(tripControlsHeaderElements[0], siteMenuElement, `afterend`);
-render(tripControlsHeaderElements[1], filterElement, `afterend`);
+render(tripControlsHeaderElements[0], siteMenuComponent, `afterend`);
+render(tripControlsHeaderElements[1], filterComponent, `afterend`);
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 
-if (Object.keys(dateEvents).length === 0) {
-  const noPointsElement = new NoPoints().getElement();
+const tripController = new TripController(tripEventsElement);
 
-  render(tripEventsElement, noPointsElement);
-} else {
-  const tripSortElement = new TripSort().getElement();
-  const daysElement = new Days().getElement();
-
-  render(tripEventsElement, tripSortElement);
-
-  render(tripEventsElement, daysElement);
-
-  const tripDaysElement = document.querySelector(`.trip-days`);
-
-  Object.entries(dateEvents).forEach((event, indexEvent) => {
-    const [dateEvent, datePoints] = event;
-
-    const dayElement = new Day(dateEvents[dateEvent], indexEvent).getElement();
-    const tripEventsListElement = dayElement.querySelector(`.trip-events__list`);
-
-    render(tripDaysElement, dayElement);
-
-    datePoints.forEach((point) => {
-      renderPoint(point, tripEventsListElement);
-    });
-  });
-}
+tripController.render(dateEvents);

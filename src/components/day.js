@@ -1,4 +1,5 @@
-import {createElement, getMarkupDate} from "../utils";
+import AbstractComponent from './abstract-component';
+import {getMarkupDate} from "../utils/common";
 
 const createTemplate = (date, indexDate) => {
   const dateTime = `${date[0].time.start.getFullYear()}-${date[0].time.start.getMonth()}-${date[0].time.start.getDate()}`;
@@ -15,22 +16,19 @@ const createTemplate = (date, indexDate) => {
   );
 };
 
-export default class Day {
+export default class DayComponent extends AbstractComponent {
   constructor(date, indexDate) {
-    this._element = null;
+    super();
+
     this._date = date;
     this._indexDate = indexDate;
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(createTemplate(this._date, this._indexDate));
-    }
-
-    return this._element;
+  getTemplate() {
+    return createTemplate(this._date, this._indexDate);
   }
 
-  removeElement() {
-    this._element = null;
+  get eventsList() {
+    return this.findElement(`.trip-events__list`);
   }
 }
