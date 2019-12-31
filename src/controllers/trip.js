@@ -20,19 +20,19 @@ const renderPoint = (container, point) => {
     }
   };
 
-  pointComponent.rollupButton.addEventListener(`click`, () => {
+  pointComponent.rollupButton.setClickHandler(() => {
     replace(pointEditComponent, pointComponent);
 
     document.addEventListener(`keydown`, onEscapeKeyDown);
   });
 
-  pointEditComponent.rollupButton.addEventListener(`click`, () => {
+  pointEditComponent.rollupButton.setClickHandler(() => {
     replace(pointComponent, pointEditComponent);
 
     document.removeEventListener(`keydown`, onEscapeKeyDown);
   });
 
-  pointEditComponent.editForm.addEventListener(`submit`, () => {
+  pointEditComponent.editForm.setSubmitHandler(() => {
     replace(pointComponent, pointEditComponent);
 
     document.removeEventListener(`keydown`, onEscapeKeyDown);

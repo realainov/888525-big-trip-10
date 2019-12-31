@@ -184,10 +184,22 @@ export default class PointEditComponent extends AbstractComponent {
   }
 
   get rollupButton() {
-    return this.findElement(`.event__rollup-btn`);
+    const rollupButtonElement = this.findElement(`.event__rollup-btn`);
+
+    rollupButtonElement.setClickHandler = (handler) => {
+      rollupButtonElement.addEventListener(`click`, handler);
+    };
+
+    return rollupButtonElement;
   }
 
   get editForm() {
-    return this.findElement(`form`);
+    const editFormElement = this.findElement(`form`);
+
+    editFormElement.setSubmitHandler = (handler) => {
+      editFormElement.addEventListener(`submit`, handler);
+    };
+
+    return editFormElement;
   }
 }
