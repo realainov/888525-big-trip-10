@@ -3,7 +3,7 @@ import FilterComponent from './components/filter';
 import SiteMenuComponent from './components/site-menu';
 import RouteInfoComponent from './components/route-info';
 import {filters} from './data/filter';
-import {generateEvents} from './data/event';
+import {generateEvents} from './data/points';
 import {render} from './utils/render';
 import {getMarkupDate} from './utils/common';
 

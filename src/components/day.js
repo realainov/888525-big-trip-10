@@ -28,7 +28,7 @@ export default class DayComponent extends AbstractComponent {
     return createTemplate(this._date, this._indexDate);
   }
 
-  get eventsList() {
+  get eventsListElement() {
     return this.findElement(`.trip-events__list`);
   }
 }

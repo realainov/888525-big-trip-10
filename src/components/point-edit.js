@@ -183,23 +183,11 @@ export default class PointEditComponent extends AbstractComponent {
     return createTemplate(this._point);
   }
 
-  get rollupButton() {
-    const rollupButtonElement = this.findElement(`.event__rollup-btn`);
-
-    rollupButtonElement.setClickHandler = (handler) => {
-      rollupButtonElement.addEventListener(`click`, handler);
-    };
-
-    return rollupButtonElement;
+  setRollupButtonClickHandler(handler) {
+    this.findElement(`.event__rollup-btn`).addEventListener(`click`, handler);
   }
 
-  get editForm() {
-    const editFormElement = this.findElement(`form`);
-
-    editFormElement.setSubmitHandler = (handler) => {
-      editFormElement.addEventListener(`submit`, handler);
-    };
-
-    return editFormElement;
+  setEditFormSubmitHandler(handler) {
+    this.findElement(`form`).addEventListener(`submit`, handler);
   }
 }

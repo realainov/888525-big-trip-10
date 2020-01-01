@@ -78,13 +78,7 @@ export default class PointComponent extends AbstractComponent {
     return createTemplate(this._point);
   }
 
-  get rollupButton() {
-    const rollupButtonElement = this.findElement(`.event__rollup-btn`);
-
-    rollupButtonElement.setClickHandler = (handler) => {
-      rollupButtonElement.addEventListener(`click`, handler);
-    };
-
-    return rollupButtonElement;
+  setRollupButtonClickHandler(handler) {
+    this.findElement(`.event__rollup-btn`).addEventListener(`click`, handler);
   }
 }

@@ -20,19 +20,19 @@ const renderPoint = (container, point) => {
     }
   };
 
-  pointComponent.rollupButton.setClickHandler(() => {
+  pointComponent.setRollupButtonClickHandler(() => {
     replace(pointEditComponent, pointComponent);
 
     document.addEventListener(`keydown`, onEscapeKeyDown);
   });
 
-  pointEditComponent.rollupButton.setClickHandler(() => {
+  pointEditComponent.setRollupButtonClickHandler(() => {
     replace(pointComponent, pointEditComponent);
 
     document.removeEventListener(`keydown`, onEscapeKeyDown);
   });
 
-  pointEditComponent.editForm.setSubmitHandler(() => {
+  pointEditComponent.setEditFormSubmitHandler(() => {
     replace(pointComponent, pointEditComponent);
 
     document.removeEventListener(`keydown`, onEscapeKeyDown);
@@ -66,7 +66,7 @@ export default class TripController {
         render(this._containerElement, dayComponent);
 
         datePoints.forEach((point) => {
-          renderPoint(dayComponent.eventsList, point);
+          renderPoint(dayComponent.eventsListElement, point);
         });
       });
     }
