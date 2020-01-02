@@ -1,41 +1,40 @@
 import AbstractComponent from './abstract-component';
+import {getMarkupDate} from '../utils/common';
 
-const calculateTotalPrice = (dateEvents) => {
+const calculateTotalPrice = (points) => {
   let totalPrice = 0;
 
-  Object.values(dateEvents).forEach((event) => {
-    event.forEach((point) => {
-      totalPrice += point.price;
+  points.forEach((point) => {
+    totalPrice += point.price;
 
-      point.options.forEach((option) => {
-        totalPrice += option.price;
-      });
+    point.options.forEach((option) => {
+      totalPrice += option.price;
     });
   });
 
   return totalPrice;
 };
 
-const createTemplate = (dateEvents) => {
-  if (Object.keys(dateEvents).length === 0) {
+const createTemplate = (points) => {
+  if (points.length === 0) {
     return (
       `<p class="trip-info__cost">
         Total: &euro;&nbsp;<span class="trip-info__cost-value">0</span>
       </p>`
     );
   } else {
-    const dates = Object.keys(dateEvents);
-    const events = Object.values(dateEvents);
+    const startPoint = points[0];
+    const endPoint = points[points.length - 1];
 
-    let startDate = dates[0];
-    let endDate = dates[dates.length - 1];
-
-    const startCity = events[0][0].city;
-    const endCity = events[events.length - 1][events[events.length - 1].length - 1].city;
+    let startDate = getMarkupDate(startPoint);
+    let endDate = getMarkupDate(endPoint);
 
     endDate = endDate.substring(0, 3) === startDate.substring(0, 3) ? endDate.substring(4) : endDate;
 
-    const totalPrice = calculateTotalPrice(dateEvents);
+    const startCity = startPoint.city;
+    const endCity = endPoint.city;
+
+    const totalPrice = calculateTotalPrice(points);
 
     return (
       `<div class="trip-info__main">
@@ -52,13 +51,13 @@ const createTemplate = (dateEvents) => {
 };
 
 export default class RouteInfoComponent extends AbstractComponent {
-  constructor(dateEvents) {
+  constructor(points) {
     super();
 
-    this._dateEvents = dateEvents;
+    this._points = points;
   }
 
   getTemplate() {
-    return createTemplate(this._dateEvents);
+    return createTemplate(this._points);
   }
 }

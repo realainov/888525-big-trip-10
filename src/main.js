@@ -5,43 +5,16 @@ import RouteInfoComponent from './components/route-info';
 import {filters} from './data/filter';
 import {generateEvents} from './data/points';
 import {render} from './utils/render';
-import {getMarkupDate} from './utils/common';
 
 const TASK_COUNT = 4;
 
 const points = generateEvents(TASK_COUNT);
 
-points.sort((a, b) => {
-  if (a.time.start > b.time.start) {
-    return 1;
-  }
-
-  if (a.time.start < b.time.start) {
-    return -1;
-  }
-
-  return 0;
-});
-
-const dates = new Set();
-
-points.forEach((point) => {
-  dates.add(getMarkupDate(point));
-});
-
-const dateEvents = {};
-
-dates.forEach((date) => {
-  dateEvents[date] = [];
-});
-
-points.forEach((point) => {
-  dateEvents[getMarkupDate(point)].push(point);
-});
+points.sort((a, b) => a.time.start - b.time.start);
 
 const tripInfoElement = document.querySelector(`.trip-info`);
 
-const routeInfoComponent = new RouteInfoComponent(dateEvents);
+const routeInfoComponent = new RouteInfoComponent(points);
 
 render(tripInfoElement, routeInfoComponent, `afterbegin`);
 
@@ -56,4 +29,4 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 
 const tripController = new TripController(tripEventsElement);
 
-tripController.render(dateEvents);
+tripController.render(points);
