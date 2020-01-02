@@ -2,6 +2,7 @@ import TripController from './controllers/trip';
 import FilterComponent from './components/filter';
 import SiteMenuComponent from './components/site-menu';
 import RouteInfoComponent from './components/route-info';
+import RouteCostComponent from './components/route-cost';
 import {filters} from './data/filter';
 import {generateEvents} from './data/points';
 import {render} from './utils/render';
@@ -15,8 +16,10 @@ points.sort((a, b) => a.time.start - b.time.start);
 const tripInfoElement = document.querySelector(`.trip-info`);
 
 const routeInfoComponent = new RouteInfoComponent(points);
+const routeCostComponent = new RouteCostComponent(points);
 
-render(tripInfoElement, routeInfoComponent, `afterbegin`);
+render(tripInfoElement, routeInfoComponent);
+render(tripInfoElement, routeCostComponent);
 
 const tripControlsHeaderElements = document.querySelectorAll(`.trip-controls h2`);
 const siteMenuComponent = new SiteMenuComponent();
