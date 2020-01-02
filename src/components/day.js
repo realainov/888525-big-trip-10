@@ -1,14 +1,14 @@
 import AbstractComponent from './abstract-component';
 import {getMarkupDate} from "../utils/common";
 
-const createTemplate = (date, indexDate) => {
-  if (date !== undefined && indexDate !== undefined) {
+const createTemplate = (date, index) => {
+  if (date !== undefined && index !== undefined) {
     const dateTime = `${date[0].time.start.getFullYear()}-${date[0].time.start.getMonth()}-${date[0].time.start.getDate()}`;
 
     return (
       `<li class="trip-days__item day">
         <div class="day__info">
-          <span class="day__counter">${indexDate + 1}</span>
+          <span class="day__counter">${index + 1}</span>
           <time class="day__date" datetime="${dateTime}">${getMarkupDate(date[0])}</time>
         </div>
   
@@ -27,15 +27,15 @@ const createTemplate = (date, indexDate) => {
 };
 
 export default class DayComponent extends AbstractComponent {
-  constructor(date, indexDate) {
+  constructor(date, index) {
     super();
 
     this._date = date;
-    this._indexDate = indexDate;
+    this._index = index;
   }
 
   getTemplate() {
-    return createTemplate(this._date, this._indexDate);
+    return createTemplate(this._date, this._index);
   }
 
   get eventsListElement() {
