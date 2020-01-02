@@ -51,24 +51,24 @@ const renderPoints = (container, points, isWithDates = true) => {
       dates.add(getMarkupDate(point));
     });
 
-    const dateEvents = {};
+    const events = {};
 
     dates.forEach((date) => {
-      dateEvents[date] = [];
+      events[date] = [];
     });
 
     points.forEach((point) => {
-      dateEvents[getMarkupDate(point)].push(point);
+      events[getMarkupDate(point)].push(point);
     });
 
-    Object.entries(dateEvents).forEach((event, indexEvent) => {
-      const [dateEvent, datePoints] = event;
+    Object.entries(events).forEach((event, index) => {
+      const [eventDate, eventPoints] = event;
 
-      const dayComponent = new DayComponent(dateEvents[dateEvent], indexEvent);
+      const dayComponent = new DayComponent(events[eventDate], index);
 
       render(container, dayComponent);
 
-      datePoints.forEach((point) => {
+      eventPoints.forEach((point) => {
         renderPoint(dayComponent.eventsListElement, point);
       });
     });
