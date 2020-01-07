@@ -271,13 +271,13 @@ export default class PointEditComponent extends AbstractSmartComponent {
 
     this._startFlatpickr = flatpickr(startDateElement, {
       enableTime: true,
-      dateFormat: `d/m/Y H:i`,
+      dateFormat: `d/m/y H:i`,
       defaultDate: this._addOptions.time.start
     });
 
     this._endFlatpickr = flatpickr(endDateElement, {
       enableTime: true,
-      dateFormat: `d/m/Y H:i`,
+      dateFormat: `d/m/y H:i`,
       defaultDate: this._addOptions.time.end
     });
   }
