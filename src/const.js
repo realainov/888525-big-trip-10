@@ -1,52 +1,22 @@
-export const TYPES = {
-  transport: [
-    {
-      name: `bus`,
-      title: `Bus to`
-    },
-    {
-      name: `drive`,
-      title: `Drive to`
-    },
-    {
-      name: `flight`,
-      title: `Flight to`
-    },
-    {
-      name: `ship`,
-      title: `Ship to`
-    },
-    {
-      name: `taxi`,
-      title: `Taxi to`
-    },
-    {
-      name: `train`,
-      title: `Train to`
-    },
-    {
-      name: `transport`,
-      title: `Transport in`
-    }
-  ],
-  activity: [
-    {
-      name: `check-in`,
-      title: `Check-in in`
-    },
-    {
-      name: `restaurant`,
-      title: `Restaurant in`
-    },
-    {
-      name: `sightseeing`,
-      title: `Sightseeing at`
-    },
-    {
-      name: `trip`,
-      title: `Trip to`
-    }
-  ]
+export const TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`, `trip`];
+
+export const TYPE_GROUPS = {
+  transport: [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`],
+  activity: [`check-in`, `restaurant`, `sightseeing`, `trip`]
+};
+
+export const typeMap = {
+  'bus': `Bus to`,
+  'drive': `Drive to`,
+  'flight': `Flight to`,
+  'ship': `Ship to`,
+  'taxi': `Taxi to`,
+  'train': `Train to`,
+  'transport': `Transport in`,
+  'check-in': `Check-in in`,
+  'restaurant': `Restaurant in`,
+  'sightseeing': `Sightseeing at`,
+  'trip': `Trip to`
 };
 
 export const CITIES = [`Tokyo`, `Kyoto`, `Auckland`, `Los Angeles`, `Christchurch`, `Wellington`, `Naha`];
@@ -63,19 +33,4 @@ export const DESCRIPTIONS = [
   `Aliquam erat volutpat.`,
   `Nunc fermentum tortor ac porta dapibus.`,
   `In rutrum ac purus sit amet tempus.`
-];
-
-export const MONTHS = [
-  `January`,
-  `February`,
-  `March`,
-  `April`,
-  `May`,
-  `June`,
-  `July`,
-  `August`,
-  `September`,
-  `October`,
-  `November`,
-  `December`,
 ];

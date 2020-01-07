@@ -1,6 +1,9 @@
-import AbstractComponent from './abstract-component';
-import {makeWordCapitalize} from "../utils/common";
-import {TYPES} from "../const";
+import AbstractSmartComponent from './abstract-smart-component';
+import {makeWordCapitalize, formatTime, formatDate} from '../utils/common';
+import {TYPE_GROUPS, typeMap, CITIES} from '../const';
+import {generateDescription, generateOptions} from '../data/points';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 const createOptionsMarkup = (options) => {
   return options
@@ -24,8 +27,8 @@ const createTypesMarkup = (types, currentType) => {
     .map((type) => {
       return (
         `<div class="event__type-item">
-          <input id="event-type-${type.name}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.name}" ${currentType === type ? `checked` : ``}>
-          <label class="event__type-label  event__type-label--${type.name}" for="event-type-${type.name}-1">${makeWordCapitalize(type.name)}</label>
+          <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? `checked` : ``}>
+          <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${makeWordCapitalize(type)}</label>
         </div>`
       );
     })
@@ -58,29 +61,30 @@ const createPhotosMarkup = (photos) => {
     .join(`\n`);
 };
 
-const createTemplate = (point) => {
-  const {type, city, photos, description, price, options, time} = point;
+const createCityMarkup = (cities) => {
+  return cities
+    .map((city) => {
+      return (
+        `<option value="${city}"></option>`
+      );
+    })
+    .join(`\n`);
+};
 
-  const dateOptions = {
-    year: `2-digit`,
-    month: `numeric`,
-    day: `numeric`
-  };
+const createTemplate = (point, addOptions) => {
+  const {photos, price, isFavorite} = point;
+  const {city, description, options, type, time} = addOptions;
 
-  const timeOptions = {
-    hour: `numeric`,
-    minute: `numeric`
-  };
+  const startDate = formatDate(time.start);
+  const endDate = formatDate(time.end);
 
-  const startDate = time.start.toLocaleString(`en-GB`, dateOptions);
-  const endDate = time.end.toLocaleString(`en-GB`, dateOptions);
+  const startTime = formatTime(time.start);
+  const endTime = formatTime(time.end);
 
-  const startTime = time.start.toLocaleString(`en-GB`, timeOptions);
-  const endTime = time.start.toLocaleString(`en-GB`, timeOptions);
-
-  const typesMarkup = createTypeGroupMarkup(TYPES, type);
+  const typesMarkup = createTypeGroupMarkup(TYPE_GROUPS, type);
   const optionsMarkup = createOptionsMarkup(options);
   const photosMarkup = createPhotosMarkup(photos);
+  const cityMarkup = createCityMarkup(CITIES);
 
   return (
     `<li class="trip-events__item">
@@ -89,7 +93,7 @@ const createTemplate = (point) => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${type.name}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -100,13 +104,11 @@ const createTemplate = (point) => {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              ${type.title}
+              ${typeMap[type]}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" autocomplete="off">
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+              ${cityMarkup}
             </datalist>
           </div>
 
@@ -133,7 +135,7 @@ const createTemplate = (point) => {
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
           <button class="event__reset-btn" type="reset">Delete</button>
 
-          <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+          <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
           <label class="event__favorite-btn" for="event-favorite-1">
             <span class="visually-hidden">Add to favorite</span>
             <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -172,22 +174,139 @@ const createTemplate = (point) => {
   );
 };
 
-export default class PointEditComponent extends AbstractComponent {
+export default class PointEditComponent extends AbstractSmartComponent {
   constructor(point) {
     super();
 
     this._point = point;
+
+    this._addOptions = {
+      description: point.description,
+      city: point.city,
+      options: point.options,
+      type: point.type,
+      time: {
+        start: point.time.start,
+        end: point.time.end
+      }
+    };
+
+    this._rollupButtonClickHandler = null;
+    this._favoriteButtonClickHandler = null;
+    this._editFormSubmitHandler = null;
+
+    this._startFlatpickr = null;
+    this._endFlatpickr = null;
+
+    this._applyFlatpickr();
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return createTemplate(this._point);
+    return createTemplate(this._point, this._addOptions);
+  }
+
+  recoveryEventListeners() {
+    this.setRollupButtonClickHandler(this._rollupButtonClickHandler);
+    this.setFavoriteCheckboxChangeHandler(this._favoriteButtonClickHandler);
+    this.setEditFormSubmitHandler(this._editFormSubmitHandler);
+
+    this._subscribeOnEvents();
+  }
+
+  rerender() {
+    super.rerender();
+
+    this._applyFlatpickr();
+  }
+
+  reset() {
+    const point = this._point;
+
+    this._addOptions = {
+      description: point.description,
+      city: point.city,
+      options: point.options,
+      type: point.type,
+      time: {
+        start: point.time.start,
+        end: point.time.end
+      }
+    };
+
+    this.rerender();
   }
 
   setRollupButtonClickHandler(handler) {
     this.findElement(`.event__rollup-btn`).addEventListener(`click`, handler);
+
+    this._rollupButtonClickHandler = handler;
+  }
+
+  setFavoriteCheckboxChangeHandler(handler) {
+    this.findElement(`.event__favorite-checkbox`).addEventListener(`change`, handler);
+
+    this._favoriteButtonClickHandler = handler;
   }
 
   setEditFormSubmitHandler(handler) {
     this.findElement(`form`).addEventListener(`submit`, handler);
+
+    this._editFormSubmitHandler = handler;
+  }
+
+  _applyFlatpickr() {
+    if (this._startFlatpickr) {
+      this._startFlatpickr.destroy();
+      this._startFlatpickr = null;
+    }
+
+    if (this._endFlatpickr) {
+      this._endFlatpickr.destroy();
+      this._endFlatpickr = null;
+    }
+
+    const startDateElement = this.findElement(`#event-start-time-1`);
+    const endDateElement = this.findElement(`#event-end-time-1`);
+
+    this._startFlatpickr = flatpickr(startDateElement, {
+      enableTime: true,
+      dateFormat: `d/m/Y H:i`,
+      defaultDate: this._addOptions.time.start
+    });
+
+    this._endFlatpickr = flatpickr(endDateElement, {
+      enableTime: true,
+      dateFormat: `d/m/Y H:i`,
+      defaultDate: this._addOptions.time.end
+    });
+  }
+
+  _subscribeOnEvents() {
+    const eventTypeListElement = this.findElement(`.event__type-list`);
+
+    eventTypeListElement.addEventListener(`change`, (evt) => {
+      if (evt.target.tagName !== `INPUT`) {
+        return;
+      }
+
+      this._addOptions.type = evt.target.value;
+      this._addOptions.description = generateDescription();
+      this._addOptions.options = generateOptions();
+
+      this.rerender();
+    });
+
+    const eventDestinationElement = this.findElement(`#event-destination-1`);
+
+    eventDestinationElement.addEventListener(`focus`, () => {
+      eventDestinationElement.removeAttribute(`value`);
+
+      eventDestinationElement.addEventListener(`change`, () => {
+        this._addOptions.city = eventDestinationElement.value;
+
+        this.rerender();
+      });
+    });
   }
 }

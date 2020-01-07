@@ -1,15 +1,16 @@
 import AbstractComponent from './abstract-component';
-import {getMarkupDate} from "../utils/common";
+import {formatMarkupDate, formatDateTime} from "../utils/common";
 
-const createTemplate = (date, index) => {
-  if (date !== undefined && index !== undefined) {
-    const dateTime = `${date[0].time.start.getFullYear()}-${date[0].time.start.getMonth()}-${date[0].time.start.getDate()}`;
+const createTemplate = (points, index) => {
+  if (points !== undefined && index !== undefined) {
+    const dateTime = formatDateTime(points[0].time.start);
+    const date = formatMarkupDate(points[0].time.start);
 
     return (
       `<li class="trip-days__item day">
         <div class="day__info">
           <span class="day__counter">${index + 1}</span>
-          <time class="day__date" datetime="${dateTime}">${getMarkupDate(date[0])}</time>
+          <time class="day__date" datetime="${dateTime}">${date}</time>
         </div>
   
         <ul class="trip-events__list"></ul>

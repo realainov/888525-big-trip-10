@@ -1,5 +1,6 @@
 import AbstractComponent from './abstract-component';
-import {calculateDuration} from "../utils/common";
+import {calculateDuration, formatTime, formatDateTime} from '../utils/common';
+import {typeMap} from '../const';
 
 const createOptionsMarkup = (options) => {
   return options
@@ -18,18 +19,13 @@ const createOptionsMarkup = (options) => {
 const createTemplate = (point) => {
   const {type, city, price, options, time} = point;
 
-  const timeOptions = {
-    hour: `numeric`,
-    minute: `numeric`
-  };
+  const startTime = formatTime(time.start);
+  const endTime = formatTime(time.end);
 
-  const startTime = time.start.toLocaleString(`en-GB`, timeOptions);
-  const endTime = time.start.toLocaleString(`en-GB`, timeOptions);
+  const startDateTime = formatDateTime(time.start);
+  const endDateTime = formatDateTime(time.end);
 
-  const startDateTime = `${time.start.getFullYear()}-${time.start.getMonth()}-${time.start.getDay()}T${startTime}`;
-  const endDateTime = `${time.end.getFullYear()}-${time.end.getMonth()}-${time.end.getDay()}T${endTime}`;
-
-  const duration = calculateDuration(time.end - time.start);
+  const duration = calculateDuration(time.end, time.start);
 
   const optionsMarkup = createOptionsMarkup(options);
 
@@ -37,9 +33,9 @@ const createTemplate = (point) => {
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${type.name}.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type.title} ${city}</h3>
+        <h3 class="event__title">${typeMap[type]} ${city}</h3>
 
         <div class="event__schedule">
           <p class="event__time">

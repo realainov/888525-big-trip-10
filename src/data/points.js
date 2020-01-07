@@ -1,6 +1,6 @@
-import {DESCRIPTIONS, TYPES, CITIES} from "../const";
+import {DESCRIPTIONS, TYPES, CITIES} from '../const';
 
-const generateDescription = () => {
+export const generateDescription = () => {
   return DESCRIPTIONS
     .filter(() => Math.random() > 0.5)
     .slice(0, generateNumber(3, 1))
@@ -37,7 +37,7 @@ const OPTIONS = [
   }
 ];
 
-const generateOptions = () => {
+export const generateOptions = () => {
   return OPTIONS
     .map((item) => {
       return {
@@ -73,7 +73,7 @@ const generateEvent = () => {
   [startDate, endDate] = startDate > endDate ? [endDate, startDate] : [startDate, endDate];
 
   return {
-    type: getRandomArrayItem(getRandomArrayItem(Object.values(TYPES))),
+    type: getRandomArrayItem(TYPES),
     city: getRandomArrayItem(CITIES),
     photos: generatePhotos(),
     description: generateDescription(),
@@ -82,7 +82,8 @@ const generateEvent = () => {
     time: {
       start: startDate,
       end: endDate
-    }
+    },
+    isFavorite: !!generateNumber(1)
   };
 };
 

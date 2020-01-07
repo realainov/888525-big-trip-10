@@ -1,7 +1,23 @@
-import {MONTHS} from "../const";
+import moment from 'moment';
 
 export const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : `${value}`;
+};
+
+export const formatTime = (date) => {
+  return moment(date).format(`hh:mm`);
+};
+
+export const formatDateTime = (date) => {
+  return moment(date).format();
+};
+
+export const formatDate = (date) => {
+  return moment(date).format(`DD/MM/YY`);
+};
+
+export const formatMarkupDate = (date) => {
+  return moment(date).format(`MMM DD`);
 };
 
 export const makeWordCapitalize = (string) => {
@@ -10,15 +26,8 @@ export const makeWordCapitalize = (string) => {
   return string[0].toUpperCase() + string.substring(1);
 };
 
-export const getMarkupDate = (point) => {
-  const currentMonth = MONTHS[point.time.start.getMonth()].substring(0, 3).toUpperCase();
-  const currentDay = point.time.start.getDate();
-
-  return `${currentMonth} ${currentDay}`;
-};
-
-export const calculateDuration = (duration) => {
-  const result = duration / (1000 * 60);
+export const calculateDuration = (end, start) => {
+  const result = (end - start) / (1000 * 60);
 
   const minutes = result % 60;
   const hours = Math.floor(result / 60) % 24;
