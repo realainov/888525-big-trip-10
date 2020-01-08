@@ -10,8 +10,8 @@ const createOptionsMarkup = (options) => {
     .map((option) => {
       return (
         `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${option.type}-1" type="checkbox" name="event-offer-luggage" checked>
-          <label class="event__offer-label" for="event-offer-luggage-1">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${option.type}-1" type="checkbox" name="event-offer-${option.type}" checked>
+          <label class="event__offer-label" for="event-offer-${option.type}-1">
             <span class="event__offer-title">${option.name}</span>
             &plus;
             &euro;&nbsp;<span class="event__offer-price">${option.price}</span>

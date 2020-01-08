@@ -47,7 +47,7 @@ export const generateOptions = () => {
       };
     })
     .filter(() => Math.random() > 0.5)
-    .slice(0, generateNumber(2));
+    .slice(0, generateNumber(3));
 };
 
 const generatePhotos = () => {
