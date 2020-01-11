@@ -304,7 +304,7 @@ export default class PointEditComponent extends AbstractSmartComponent {
     eventDestinationElement.addEventListener(`focus`, () => {
       eventDestinationElement.removeAttribute(`value`);
 
-      eventDestinationElement.addEventListener(`input`, () => {
+      eventDestinationElement.addEventListener(`change`, () => {
         this._tempPoint.city = eventDestinationElement.value;
         this._tempPoint.description = generateDescription();
         this._tempPoint.photos = generatePhotos();
@@ -327,7 +327,7 @@ export default class PointEditComponent extends AbstractSmartComponent {
 
     const eventPriceElement = this.findElement(`#event-price-1`);
 
-    eventPriceElement.addEventListener(`input`, () => {
+    eventPriceElement.addEventListener(`change`, () => {
       this._tempPoint.price = eventPriceElement.value;
 
       this.rerender();

@@ -34,6 +34,8 @@ export default class Points {
 
     this._points.sort((a, b) => a.time.start - b.time.start);
 
+    console.log(this._points);
+
     this._callHandlers(this._dataChangeHandlers);
   }
 

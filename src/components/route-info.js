@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract-component';
+import AbstractSmartComponent from './abstract-smart-component';
 import {formatMarkupDate} from '../utils/common';
 
 const createTemplate = (points) => {
@@ -28,14 +28,26 @@ const createTemplate = (points) => {
   return ``;
 };
 
-export default class RouteInfoComponent extends AbstractComponent {
-  constructor(points) {
+export default class RouteInfoComponent extends AbstractSmartComponent {
+  constructor(pointsModel) {
     super();
 
-    this._points = points;
+    this._pointsModel = pointsModel;
+
+    this._onDataChange = this._onDataChange.bind(this);
+
+    this._pointsModel.setDataChangeHandler(this._onDataChange);
   }
 
   getTemplate() {
-    return createTemplate(this._points);
+    return createTemplate(this._pointsModel.getPoints());
+  }
+
+  recoveryEventListeners() {
+
+  }
+
+  _onDataChange() {
+    this.rerender();
   }
 }

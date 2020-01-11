@@ -17,8 +17,8 @@ const pointsModel = new PointsModel(points);
 
 const tripInfoElement = document.querySelector(`.trip-info`);
 
-const routeInfoComponent = new RouteInfoComponent(points);
-const routeCostComponent = new RouteCostComponent(points);
+const routeInfoComponent = new RouteInfoComponent(pointsModel);
+const routeCostComponent = new RouteCostComponent(pointsModel);
 
 render(tripInfoElement, routeInfoComponent);
 render(tripInfoElement, routeCostComponent);

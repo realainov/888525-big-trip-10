@@ -1,13 +1,13 @@
-import AbstractComponent from './abstract-component';
+import AbstractSmartComponent from './abstract-smart-component';
 
 const calculateTotalPrice = (points) => {
   let totalPrice = 0;
 
   points.forEach((point) => {
-    totalPrice += point.price;
+    totalPrice += +point.price;
 
     point.options.forEach((option) => {
-      totalPrice = option.isChecked ? totalPrice + option.price : totalPrice;
+      totalPrice = option.isChecked ? totalPrice + +option.price : totalPrice;
     });
   });
 
@@ -32,14 +32,26 @@ const createTemplate = (points) => {
   }
 };
 
-export default class RouteCostComponent extends AbstractComponent {
-  constructor(points) {
+export default class RouteCostComponent extends AbstractSmartComponent {
+  constructor(pointsModel) {
     super();
 
-    this._points = points;
+    this._pointsModel = pointsModel;
+
+    this._onDataChange = this._onDataChange.bind(this);
+
+    this._pointsModel.setDataChangeHandler(this._onDataChange);
   }
 
   getTemplate() {
-    return createTemplate(this._points);
+    return createTemplate(this._pointsModel.getPoints());
+  }
+
+  recoveryEventListeners() {
+
+  }
+
+  _onDataChange() {
+    this.rerender();
   }
 }
