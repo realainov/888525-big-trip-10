@@ -1,5 +1,6 @@
 import AbstractComponent from './abstract-component';
 import {formatMarkupDate, formatDateTime} from "../utils/common";
+import {remove} from '../utils/render';
 
 const createTemplate = (points, index) => {
   if (points !== undefined && index !== undefined) {

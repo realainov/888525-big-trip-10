@@ -10,7 +10,7 @@ export const generateDescription = () => {
 const generateDate = () => {
   const date = new Date();
 
-  date.setDate(date.getDate() + generateNumber(7));
+  date.setDate(date.getDate() + generateNumber(7, -7));
 
   date.setHours(generateNumber(23));
   date.setMinutes(generateNumber(59));
@@ -37,20 +37,21 @@ const OPTIONS = [
   }
 ];
 
-export const generateOptions = () => {
+export const generateOptions = (isAllUnchecked = false) => {
   return OPTIONS
     .map((item) => {
       return {
         name: item.name,
         type: item.type,
-        price: generateNumber(200)
+        price: generateNumber(200),
+        isChecked: isAllUnchecked ? false : generateNumber(1)
       };
     })
     .filter(() => Math.random() > 0.5)
     .slice(0, generateNumber(3));
 };
 
-const generatePhotos = () => {
+export const generatePhotos = () => {
   return new Array(generateNumber(5))
     .fill(``)
     .map(() => {
@@ -73,17 +74,18 @@ const generateEvent = () => {
   [startDate, endDate] = startDate > endDate ? [endDate, startDate] : [startDate, endDate];
 
   return {
-    type: getRandomArrayItem(TYPES),
     city: getRandomArrayItem(CITIES),
-    photos: generatePhotos(),
     description: generateDescription(),
-    price: generateNumber(200, 1),
+    id: Math.random(),
+    isFavorite: !!generateNumber(1),
     options: generateOptions(),
+    photos: generatePhotos(),
+    price: generateNumber(200, 1),
     time: {
       start: startDate,
       end: endDate
     },
-    isFavorite: !!generateNumber(1)
+    type: getRandomArrayItem(TYPES)
   };
 };
 

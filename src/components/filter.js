@@ -1,23 +1,24 @@
 import AbstractComponent from './abstract-component';
 
-const createFilterMarkup = (filter, isChecked) => {
+const createFilterMarkup = (filter) => {
+  const {name, isChecked} = filter;
   return (
     `<div class="trip-filters__filter">
       <input 
-        id="filter-${filter.toLowerCase()}" 
+        id="filter-${name}" 
         class="trip-filters__filter-input  visually-hidden" 
         type="radio" 
         name="trip-filter" 
-        value="${filter.toLowerCase()}" 
+        value="${name}" 
         ${isChecked ? `checked` : ``}
       >
-      <label class="trip-filters__filter-label" for="filter-future">${filter}</label>
+      <label class="trip-filters__filter-label" for="filter-${name}">${name.toUpperCase()}</label>
     </div>`
   );
 };
 
 const createTemplate = (filters) => {
-  const filtersMarkup = filters.map((item, i) => createFilterMarkup(item, i === 0)).join(`\n`);
+  const filtersMarkup = filters.map((filter) => createFilterMarkup(filter)).join(`\n`);
 
   return (
     `<form class="trip-filters" action="#" method="get">
@@ -37,5 +38,13 @@ export default class FilterComponent extends AbstractComponent {
 
   getTemplate() {
     return createTemplate(this._filters);
+  }
+
+  setFilterChangeHandler(handler) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      const filterName = evt.target.value;
+
+      handler(filterName);
+    });
   }
 }

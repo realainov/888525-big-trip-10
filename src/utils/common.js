@@ -13,7 +13,7 @@ export const formatDateTime = (date) => {
 };
 
 export const formatDate = (date) => {
-  return moment(date).format(`DD/MM/YY`);
+  return moment(date).format(`DD/MM/YYYY`);
 };
 
 export const formatMarkupDate = (date) => {
@@ -29,17 +29,32 @@ export const makeWordCapitalize = (string) => {
 export const calculateDuration = (end, start) => {
   const result = (end - start) / (1000 * 60);
 
-  const minutes = result % 60;
-  const hours = Math.floor(result / 60) % 24;
-  const days = Math.floor(Math.floor(result / 60) / 24);
+  let minutes = result % 60;
+  let hours = Math.floor(result / 60) % 24;
+  let days = Math.floor(Math.floor(result / 60) / 24);
 
-  if (days) {
-    return `${castTimeFormat(days)}D ${castTimeFormat(hours)}H ${castTimeFormat(minutes)}M`;
-  }
+  minutes = minutes !== 0 ? `${castTimeFormat(minutes)}M` : ``;
+  hours = hours !== 0 ? `${castTimeFormat(hours)}H` : ``;
+  days = days !== 0 ? `${castTimeFormat(days)}D` : ``;
 
-  if (hours) {
-    return `${castTimeFormat(hours)}H ${castTimeFormat(minutes)}M`;
-  }
+  return `${days} ${hours} ${minutes}`;
+};
 
-  return `${castTimeFormat(minutes)}M`;
+export const isFuturePoint = (date) => {
+  const todayDate = new Date();
+
+  return date > todayDate && !isOneDay(date);
+};
+
+export const isPastPoint = (date) => {
+  const todayDate = new Date();
+
+  return date < todayDate && !isOneDay(date);
+};
+
+export const isOneDay = (dateA, dateB = new Date()) => {
+  const a = moment(dateA);
+  const b = moment(dateB);
+
+  return a.diff(b, `days`) === 0 && dateA.getDate() === dateB.getDate();
 };

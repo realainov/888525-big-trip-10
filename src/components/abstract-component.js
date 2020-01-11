@@ -31,6 +31,10 @@ export default class AbstractComponent {
     return this.getElement().querySelector(selector);
   }
 
+  findElements(selector) {
+    return this.getElement().querySelectorAll(selector);
+  }
+
   removeElement() {
     this._element = null;
   }

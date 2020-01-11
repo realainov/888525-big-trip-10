@@ -1,10 +1,5 @@
 import AbstractComponent from './abstract-component';
-
-export const SortType = {
-  EVENT: `sort-event`,
-  TIME: `sort-time`,
-  PRICE: `sort-price`
-};
+import {SortType} from '../const';
 
 const createTemplate = () => {
   return (
@@ -49,10 +44,6 @@ export default class TripSortComponent extends AbstractComponent {
   setSortTypeChangeHandler(handler) {
     this.getElement().addEventListener(`change`, (evt) => {
       evt.preventDefault();
-
-      if (evt.target.tagName !== `INPUT`) {
-        return;
-      }
 
       const sortType = evt.target.value;
 
