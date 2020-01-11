@@ -1,5 +1,5 @@
 import AbstractSmartComponent from './abstract-smart-component';
-import {formatMarkupDate} from '../utils/common';
+import {formatMarkupDate, formatMarkupFullDate} from '../utils/common';
 
 const createTemplate = (points) => {
   if (points.length !== 0) {
@@ -8,10 +8,14 @@ const createTemplate = (points) => {
     const startPoint = sortedPoints[0];
     const endPoint = sortedPoints[sortedPoints.length - 1];
 
-    let startDate = formatMarkupDate(startPoint.time.start);
-    let endDate = formatMarkupDate(endPoint.time.start);
+    const isEqualYear = startPoint.time.start.getFullYear() === endPoint.time.start.getFullYear();
 
-    endDate = endDate.substring(0, 3) === startDate.substring(0, 3) ? endDate.substring(4) : endDate;
+    let startDate = isEqualYear ? formatMarkupDate(startPoint.time.start) : formatMarkupFullDate(startPoint.time.start);
+    let endDate = isEqualYear ? formatMarkupDate(endPoint.time.start) : formatMarkupFullDate(endPoint.time.start);
+
+    if (isEqualYear) {
+      endDate = endDate.substring(0, 3) === startDate.substring(0, 3) ? endDate.substring(4) : endDate;
+    }
 
     const startCity = startPoint.city;
     const endCity = endPoint.city;

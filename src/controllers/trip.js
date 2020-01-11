@@ -5,7 +5,7 @@ import DayComponent from '../components/day';
 import PointController from '../controllers/point';
 import {SortType, Mode} from '../const';
 import {render} from '../utils/render';
-import {formatMarkupDate} from '../utils/common';
+import {formatDate} from '../utils/common';
 import {emptyPoint} from './point';
 
 const renderPoint = (container, point, onDataChange, onViewChange) => {
@@ -27,7 +27,7 @@ const renderPoints = (containerElement, points, onDataChange, onViewChange, isWi
     const dates = new Set();
 
     points.forEach((point) => {
-      dates.add(formatMarkupDate(point.time.start));
+      dates.add(formatDate(point.time.start));
     });
 
     const events = {};
@@ -37,7 +37,7 @@ const renderPoints = (containerElement, points, onDataChange, onViewChange, isWi
     });
 
     points.forEach((point) => {
-      events[formatMarkupDate(point.time.start)].push(point);
+      events[formatDate(point.time.start)].push(point);
     });
 
     Object.entries(events).forEach((event, index) => {
