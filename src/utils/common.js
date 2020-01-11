@@ -20,10 +20,6 @@ export const formatMarkupDate = (date) => {
   return moment(date).format(`MMM DD`);
 };
 
-export const formatMarkupFullDate = (date) => {
-  return moment(date).format(`MMM DD YYYY`);
-};
-
 export const makeWordCapitalize = (string) => {
   string = string.toString();
 
