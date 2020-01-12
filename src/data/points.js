@@ -48,7 +48,7 @@ export const generateOptions = (isAllUnchecked = false) => {
       };
     })
     .filter(() => Math.random() > 0.5)
-    .slice(0, generateNumber(3));
+    .slice(0, generateNumber(5));
 };
 
 export const generatePhotos = () => {
@@ -59,7 +59,7 @@ export const generatePhotos = () => {
     });
 };
 
-const generateNumber = (max, min = 0) => {
+export const generateNumber = (max, min = 0) => {
   return Math.floor(min + Math.random() * (max + 1 - min));
 };
 

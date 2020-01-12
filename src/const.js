@@ -15,7 +15,7 @@ export const typeMap = {
   'transport': `Transport in`,
   'check-in': `Check-in in`,
   'restaurant': `Restaurant in`,
-  'sightseeing': `Sightseeing at`,
+  'sightseeing': `Sightseeing in`,
   'trip': `Trip to`
 };
 
@@ -51,4 +51,9 @@ export const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
   EDIT: `edit`,
+};
+
+export const MenuType = {
+  TABLE: `table`,
+  STATS: `stats`
 };

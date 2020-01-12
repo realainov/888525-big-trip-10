@@ -1,7 +1,8 @@
 import AbstractComponent from './abstract-component';
 
 const createFilterMarkup = (filter) => {
-  const {name, isChecked} = filter;
+  const {name, isChecked, isNoPoints} = filter;
+
   return (
     `<div class="trip-filters__filter">
       <input 
@@ -11,6 +12,7 @@ const createFilterMarkup = (filter) => {
         name="trip-filter" 
         value="${name}" 
         ${isChecked ? `checked` : ``}
+        ${isNoPoints ? `disabled` : ``}
       >
       <label class="trip-filters__filter-label" for="filter-${name}">${name.toUpperCase()}</label>
     </div>`

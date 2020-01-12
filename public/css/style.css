@@ -934,8 +934,20 @@ input[type='number'] {
     margin-right: 5px; }
 
 .statistics {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
   padding-top: 47px;
-  padding-left: 37px; }
+  width: 1020px;
+  margin-left: auto; }
 
 .statistics__item:not(:last-child) {
   margin-bottom: 78px; }
+
+.statistics__item--money,
+.statistics__item--transport {
+  width: 50%; }
+
+.statistics__item--time-spend {
+  width: 100%; }

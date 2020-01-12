@@ -41,14 +41,10 @@ export default class RouteInfoComponent extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createTemplate(this._pointsModel.getPoints());
-  }
-
-  recoveryEventListeners() {
-
+    return createTemplate(this._pointsModel.getAllPoints());
   }
 
   _onDataChange() {
-    this.rerender();
+    this.rerender(false);
   }
 }

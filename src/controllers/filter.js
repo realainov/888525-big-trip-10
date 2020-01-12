@@ -22,6 +22,7 @@ export default class FilterController {
       return {
         name: filterType,
         isChecked: filterType === this._currentFilterType,
+        isNoPoints: !this._pointsModel.getFilterPoints(filterType).length
       };
     });
 

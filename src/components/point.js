@@ -4,6 +4,7 @@ import {typeMap} from '../const';
 
 const createOptionsMarkup = (options) => {
   return options
+    .slice(0, 3)
     .map((item) => {
       return (
         `<li class="event__offer">
@@ -25,7 +26,7 @@ const createTemplate = (point) => {
   const startDateTime = formatDateTime(time.start);
   const endDateTime = formatDateTime(time.end);
 
-  const duration = calculateDuration(time.end, time.start);
+  const duration = calculateDuration(time.end - time.start);
 
   const optionsMarkup = createOptionsMarkup(options);
 

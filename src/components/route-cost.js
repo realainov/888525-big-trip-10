@@ -44,14 +44,10 @@ export default class RouteCostComponent extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createTemplate(this._pointsModel.getPoints());
-  }
-
-  recoveryEventListeners() {
-
+    return createTemplate(this._pointsModel.getAllPoints());
   }
 
   _onDataChange() {
-    this.rerender();
+    this.rerender(false);
   }
 }

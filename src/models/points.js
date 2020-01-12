@@ -17,6 +17,14 @@ export default class Points {
     return getPointsByFilter(this._points, this._currentFilterType);
   }
 
+  getAllPoints() {
+    return this._points.slice().sort((a, b) => a.time.start - b.time.start);
+  }
+
+  getFilterPoints(filterType) {
+    return getPointsByFilter(this._points, filterType);
+  }
+
   setPoints(points) {
     this._points = Array.from(points);
 
@@ -33,8 +41,6 @@ export default class Points {
     this._points = [].concat(point, this._points);
 
     this._points.sort((a, b) => a.time.start - b.time.start);
-
-    console.log(this._points);
 
     this._callHandlers(this._dataChangeHandlers);
   }

@@ -26,18 +26,18 @@ export const makeWordCapitalize = (string) => {
   return string[0].toUpperCase() + string.substring(1);
 };
 
-export const calculateDuration = (end, start) => {
-  const result = (end - start) / (1000 * 60);
+export const calculateDuration = (duration) => {
+  const result = Math.floor(duration / (1000 * 60));
 
   let minutes = result % 60;
   let hours = Math.floor(result / 60) % 24;
   let days = Math.floor(Math.floor(result / 60) / 24);
 
   minutes = minutes !== 0 ? `${castTimeFormat(minutes)}M` : ``;
-  hours = hours !== 0 ? `${castTimeFormat(hours)}H` : ``;
-  days = days !== 0 ? `${castTimeFormat(days)}D` : ``;
+  hours = hours !== 0 ? `${castTimeFormat(hours)}H ` : ``;
+  days = days !== 0 ? `${castTimeFormat(days)}D ` : ``;
 
-  return `${days} ${hours} ${minutes}`;
+  return `${days}${hours}${minutes}`;
 };
 
 export const isFuturePoint = (date) => {

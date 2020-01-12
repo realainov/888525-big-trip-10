@@ -1,13 +1,12 @@
 import PointsModel from './models/points';
 import TripController from './controllers/trip';
-import FilterComponent from './components/filter';
 import SiteMenuComponent from './components/site-menu';
 import RouteInfoComponent from './components/route-info';
 import RouteCostComponent from './components/route-cost';
 import FilterController from './controllers/filter';
-import {FilterType} from './const';
 import {generateEvents} from './data/points';
 import {render, RenderPosition} from './utils/render';
+import {MenuType} from './const';
 
 const TASK_COUNT = 4;
 
@@ -26,17 +25,18 @@ render(tripInfoElement, routeCostComponent);
 const tripControlsHeaderElements = document.querySelectorAll(`.trip-controls h2`);
 const siteMenuComponent = new SiteMenuComponent();
 
-render(tripControlsHeaderElements[0], siteMenuComponent, RenderPosition.AFTEREND);
+siteMenuComponent.setMenuItemClickHandler((menuItem) => {
+  switch (menuItem.toLowerCase()) {
+    case MenuType.TABLE:
+      tripController.renderPoints();
 
-const filterController = new FilterController(tripControlsHeaderElements[1], pointsModel);
+      break;
+    case MenuType.STATS:
+      tripController.renderStatistics();
 
-filterController.render();
-
-const tripEventsElement = document.querySelector(`.trip-events`);
-
-const tripController = new TripController(tripEventsElement, pointsModel);
-
-tripController.render();
+      break;
+  }
+});
 
 const addPointButtonElement = document.querySelector(`.trip-main__event-add-btn`);
 
@@ -44,4 +44,14 @@ addPointButtonElement.addEventListener(`click`, () => {
   tripController.createPoint();
 });
 
+render(tripControlsHeaderElements[0], siteMenuComponent, RenderPosition.AFTEREND);
 
+const filterController = new FilterController(tripControlsHeaderElements[1], pointsModel);
+
+filterController.render();
+
+const pageContainerElement = document.querySelector(`main .page-body__container`);
+
+const tripController = new TripController(pageContainerElement, pointsModel);
+
+tripController.renderPoints();
