@@ -1,14 +1,7 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
-import Chart from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import 'chart.js/dist/Chart.min.css';
-import {generateNumber} from '../data/points';
-import {formatMarkupDate, makeWordCapitalize, calculateDuration} from '../utils/common';
 import {TYPE_GROUPS} from '../const';
-
-const generateColor = () => {
-  return `rgb(${generateNumber(205, 50)}, ${generateNumber(205, 50)}, ${generateNumber(205, 50)})`;
-};
+import ApexCharts from 'apexcharts';
 
 const renderMoneyStats = (containerElement, points) => {
   const types = new Set(points.map((point) => point.type));
@@ -19,57 +12,28 @@ const renderMoneyStats = (containerElement, points) => {
       .reduce((sum, point) => sum + +point.price, 0);
   });
 
-  return new Chart(containerElement, {
-    plugins: [ChartDataLabels],
-    type: `pie`,
-    data: {
-      labels: Array.from(types).map((type) => makeWordCapitalize(type)),
-      datasets: [{
-        data: prices,
-        backgroundColor: points.map(() => generateColor())
-      }]
+  return new ApexCharts(containerElement, {
+    series: [{
+      data: prices
+    }],
+    chart: {
+      type: `bar`,
+      height: 350
     },
-    options: {
-      plugins: {
-        datalabels: {
-          display: false
-        }
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const allData = data.datasets[tooltipItem.datasetIndex].data;
-            const tooltipData = allData[tooltipItem.index];
-            const total = allData.reduce((sum, item) => sum + parseFloat(item));
-            const tooltipPercentage = Math.round((tooltipData / total) * 100);
-            return `${tooltipData} € — ${tooltipPercentage}%`;
-          }
-        },
-        displayColors: false,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
-      },
-      title: {
-        display: true,
-        text: `DONE BY: MONEY`,
-        fontSize: 17,
-        fontColor: `#000000`
-      },
-      legend: {
-        position: `left`,
-        labels: {
-          boxWidth: 15,
-          padding: 25,
-          fontStyle: 500,
-          fontColor: `#000000`,
-          fontSize: 13
-        }
+    plotOptions: {
+      bar: {
+        horizontal: true
       }
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: (val) => `€ ${val}`
+    },
+    xaxis: {
+      categories: Array.from(types).map((type) => type.toUpperCase()),
+    },
+    grid: {
+      show: false
     }
   });
 };
@@ -88,144 +52,57 @@ const renderTrasportStats = (containerElement, points) => {
       .length;
   });
 
-  return new Chart(containerElement, {
-    plugins: [ChartDataLabels],
-    type: `pie`,
-    data: {
-      labels: Array.from(transportTypes).map((type) => makeWordCapitalize(type)),
-      datasets: [{
-        data: times,
-        backgroundColor: points.map(() => generateColor())
-      }]
+  return new ApexCharts(containerElement, {
+    series: [{
+      data: times
+    }],
+    chart: {
+      type: `bar`,
+      height: 350
     },
-    options: {
-      plugins: {
-        datalabels: {
-          display: false
-        }
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const allData = data.datasets[tooltipItem.datasetIndex].data;
-            const tooltipData = allData[tooltipItem.index];
-            const total = allData.reduce((sum, item) => sum + parseFloat(item));
-            const tooltipPercentage = Math.round((tooltipData / total) * 100);
-            return `${tooltipData === 1 ? `${tooltipData} time` : `${tooltipData} times`} — ${tooltipPercentage}%`;
-          }
-        },
-        displayColors: false,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
-      },
-      title: {
-        display: true,
-        text: `DONE BY: TRANSPORT`,
-        fontSize: 17,
-        fontColor: `#000000`
-      },
-      legend: {
-        position: `left`,
-        labels: {
-          boxWidth: 15,
-          padding: 25,
-          fontStyle: 500,
-          fontColor: `#000000`,
-          fontSize: 13
-        }
+    plotOptions: {
+      bar: {
+        horizontal: true,
       }
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: (val) => `${val}x`,
+    },
+    xaxis: {
+      categories: Array.from(transportTypes).map((type) => type.toUpperCase()),
     }
   });
 };
 
 const renderTimeSpendStats = (containerElement, points) => {
-  const formattedDates = points.map((point) => `${formatMarkupDate(point.time.start)} — ${makeWordCapitalize(point.type)}`);
+  const cities = new Set(points.map((point) => point.city));
 
-  const colors = points.map(() => generateColor());
+  const times = Array.from(cities).map((city) => {
+    return points
+      .filter((point) => point.city === city)
+      .reduce((sum, point) => sum + +point.time.start.getHours(), 0);
+  });
 
-  const durations = points.map((point) => point.time.end - point.time.start);
-
-  return new Chart(containerElement, {
-    plugins: [ChartDataLabels],
-    type: `bar`,
-    data: {
-      labels: formattedDates,
-      datasets: [{
-        data: durations,
-        backgroundColor: colors,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        lineTension: 0
-      }]
+  return new ApexCharts(containerElement, {
+    series: [{
+      data: times
+    }],
+    chart: {
+      type: `bar`,
+      height: 350
     },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 0
-          }
-        }
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: true,
-            display: false
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          }
-        }],
-        xAxes: [{
-          ticks: {
-            fontStyle: `bold`,
-            fontColor: `#000000`
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false
-          }
-        }]
-      },
-      legend: {
-        display: false
-      },
-      layout: {
-        padding: {
-          top: 10,
-          bottom: 100
-        }
-      },
-      title: {
-        display: true,
-        text: `DONE BY: TIME`,
-        fontSize: 17,
-        fontColor: `#000000`
-      },
-      tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const allData = data.datasets[tooltipItem.datasetIndex].data;
-
-            return calculateDuration(allData[tooltipItem.index]);
-          }
-        },
-        displayColors: false,
-        titleFontColor: `#000000`,
-        backgroundColor: `#ffffff`,
-        bodyFontColor: `#000000`,
-        borderColor: `#000000`,
-        borderWidth: 1,
-        cornerRadius: 0,
-        xPadding: 15,
-        yPadding: 15
+    plotOptions: {
+      bar: {
+        horizontal: true,
       }
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: (val) => `${val}H`,
+    },
+    xaxis: {
+      categories: Array.from(cities).map((type) => `TO ${type.toUpperCase()}`),
     }
   });
 };
@@ -236,15 +113,12 @@ const createTemplate = () => {
       <h2 class="visually-hidden">Trip statistics</h2>
 
       <div class="statistics__item statistics__item--money">
-        <canvas class="statistics__chart  statistics__chart--money" width="100%"></canvas>
       </div>
 
       <div class="statistics__item statistics__item--transport">
-        <canvas class="statistics__chart  statistics__chart--transport" width="100%"></canvas>
       </div>
 
       <div class="statistics__item statistics__item--time-spend">
-        <canvas class="statistics__chart  statistics__chart--time" width="100%"></canvas>
       </div>
     </section>`
   );
@@ -276,13 +150,17 @@ export default class Stats extends AbstractSmartComponent {
 
     const points = this._pointsModel.getAllPoints();
 
-    const moneyCtx = this.findElement(`.statistics__chart--money`);
-    const transportCtx = this.findElement(`.statistics__chart--transport`);
-    const timeSpendCtx = this.findElement(`.statistics__chart--time`);
+    const moneyElement = this.findElement(`.statistics__item--money`);
+    const transportCtx = this.findElement(`.statistics__item--transport`);
+    const timeSpendCtx = this.findElement(`.statistics__item--time-spend`);
 
-    this._moneyStats = renderMoneyStats(moneyCtx, points);
+    this._moneyStats = renderMoneyStats(moneyElement, points);
     this._transportStats = renderTrasportStats(transportCtx, points);
     this._timeSpendStats = renderTimeSpendStats(timeSpendCtx, points);
+
+    this._moneyStats.render();
+    this._transportStats.render();
+    this._timeSpendStats.render();
   }
 
   _resetCharts() {
