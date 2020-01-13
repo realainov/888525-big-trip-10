@@ -6,7 +6,7 @@ import RouteCostComponent from './components/route-cost';
 import FilterController from './controllers/filter';
 import {generateEvents} from './data/points';
 import {render, RenderPosition} from './utils/render';
-import {MenuType} from './const';
+import {MenuItems} from './const';
 
 const TASK_COUNT = 4;
 
@@ -26,12 +26,12 @@ const tripControlsHeaderElements = document.querySelectorAll(`.trip-controls h2`
 const siteMenuComponent = new SiteMenuComponent();
 
 siteMenuComponent.setMenuItemClickHandler((menuItem) => {
-  switch (menuItem.toLowerCase()) {
-    case MenuType.TABLE:
+  switch (menuItem) {
+    case MenuItems.TABLE:
       tripController.renderPoints();
 
       break;
-    case MenuType.STATS:
+    case MenuItems.STATS:
       tripController.renderStatistics();
 
       break;

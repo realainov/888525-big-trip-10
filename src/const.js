@@ -53,7 +53,7 @@ export const Mode = {
   EDIT: `edit`,
 };
 
-export const MenuType = {
+export const MenuItems = {
   TABLE: `table`,
   STATS: `stats`
 };
