@@ -232,8 +232,6 @@ export default class TripController {
 
         break;
     }
-
-    console.log(this._sortType);
   }
 
   _onFilterChange() {
