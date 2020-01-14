@@ -43,6 +43,9 @@ const renderMoneyStats = (containerElement, points) => {
         fontFamily: `inherit`,
         fontWeight: 500
       }
+    },
+    tooltip: {
+      enabled: false
     }
   });
 };
@@ -92,6 +95,9 @@ const renderTrasportStats = (containerElement, points) => {
         fontFamily: `inherit`,
         fontWeight: 500
       }
+    },
+    tooltip: {
+      enabled: false
     }
   });
 };
@@ -136,6 +142,9 @@ const renderTimeSpendStats = (containerElement, points) => {
         fontFamily: `inherit`,
         fontWeight: 500
       }
+    },
+    tooltip: {
+      enabled: false
     }
   });
 };
