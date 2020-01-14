@@ -1,5 +1,4 @@
-import AbstractSmartComponent from './abstract-smart-component.js';
-import 'chart.js/dist/Chart.min.css';
+import AbstractComponent from './abstract-component.js';
 import {TYPE_GROUPS} from '../const';
 import ApexCharts from 'apexcharts';
 
@@ -18,7 +17,8 @@ const renderMoneyStats = (containerElement, points) => {
     }],
     chart: {
       type: `bar`,
-      height: 350
+      height: 350,
+      fontFamily: `inherit`
     },
     plotOptions: {
       bar: {
@@ -27,13 +27,22 @@ const renderMoneyStats = (containerElement, points) => {
     },
     dataLabels: {
       enabled: true,
-      formatter: (val) => `€ ${val}`
+      formatter: (val) => `${val !== 0 ? `€ ${val}` : ``}`,
+      style: {
+        fontFamily: `inherit`
+      }
     },
     xaxis: {
-      categories: Array.from(types).map((type) => type.toUpperCase()),
+      categories: Array.from(types).map((type) => type.toUpperCase())
     },
-    grid: {
-      show: false
+    title: {
+      text: `Money`,
+      align: `center`,
+      style: {
+        fontSize: `21px`,
+        fontFamily: `inherit`,
+        fontWeight: 500
+      }
     }
   });
 };
@@ -62,15 +71,27 @@ const renderTrasportStats = (containerElement, points) => {
     },
     plotOptions: {
       bar: {
-        horizontal: true,
+        horizontal: true
       }
     },
     dataLabels: {
       enabled: true,
-      formatter: (val) => `${val}x`,
+      formatter: (val) => `${val !== 0 ? `${val}x` : ``}`,
+      style: {
+        fontFamily: `inherit`
+      }
     },
     xaxis: {
       categories: Array.from(transportTypes).map((type) => type.toUpperCase()),
+    },
+    title: {
+      text: `Transport`,
+      align: `center`,
+      style: {
+        fontSize: `21px`,
+        fontFamily: `inherit`,
+        fontWeight: 500
+      }
     }
   });
 };
@@ -94,15 +115,27 @@ const renderTimeSpendStats = (containerElement, points) => {
     },
     plotOptions: {
       bar: {
-        horizontal: true,
+        horizontal: true
       }
     },
     dataLabels: {
       enabled: true,
-      formatter: (val) => `${val}H`,
+      formatter: (val) => `${val !== 0 ? `${val}H` : ``}`,
+      style: {
+        fontFamily: `inherit`
+      }
     },
     xaxis: {
       categories: Array.from(cities).map((type) => `TO ${type.toUpperCase()}`),
+    },
+    title: {
+      text: `Time Spent`,
+      align: `center`,
+      style: {
+        fontSize: `21px`,
+        fontFamily: `inherit`,
+        fontWeight: 500
+      }
     }
   });
 };
@@ -124,11 +157,11 @@ const createTemplate = () => {
   );
 };
 
-export default class Stats extends AbstractSmartComponent {
-  constructor(pointsModel) {
+export default class Stats extends AbstractComponent {
+  constructor(points) {
     super();
 
-    this._pointsModel = pointsModel;
+    this._points = points;
 
     this._moneyStats = null;
     this._transportStats = null;
@@ -139,31 +172,21 @@ export default class Stats extends AbstractSmartComponent {
     return createTemplate();
   }
 
-  rerender() {
-    super.rerender(false);
-
-    this._renderCharts();
-  }
-
-  _renderCharts() {
-    this._resetCharts();
-
-    const points = this._pointsModel.getAllPoints();
-
+  renderCharts() {
     const moneyElement = this.findElement(`.statistics__item--money`);
     const transportCtx = this.findElement(`.statistics__item--transport`);
     const timeSpendCtx = this.findElement(`.statistics__item--time-spend`);
 
-    this._moneyStats = renderMoneyStats(moneyElement, points);
-    this._transportStats = renderTrasportStats(transportCtx, points);
-    this._timeSpendStats = renderTimeSpendStats(timeSpendCtx, points);
+    this._moneyStats = renderMoneyStats(moneyElement, this._points);
+    this._transportStats = renderTrasportStats(transportCtx, this._points);
+    this._timeSpendStats = renderTimeSpendStats(timeSpendCtx, this._points);
 
     this._moneyStats.render();
     this._transportStats.render();
     this._timeSpendStats.render();
   }
 
-  _resetCharts() {
+  destroyCharts() {
     if (this._moneyStats) {
       this._moneyStats.destroy();
       this._moneyStats = null;

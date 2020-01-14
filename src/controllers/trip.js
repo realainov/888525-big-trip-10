@@ -3,7 +3,6 @@ import EventsComponent from '../components/events';
 import DaysComponent from '../components/days';
 import NoPointsComponent from '../components/no-points';
 import DayComponent from '../components/day';
-import StatsComponent from '../components/stats';
 import PointController from '../controllers/point';
 import {SortType, Mode} from '../const';
 import {render, remove} from '../utils/render';
@@ -82,7 +81,6 @@ export default class TripController {
     this._noPoitsComponent = new NoPointsComponent();
     this._tripSortComponent = new TripSortComponent();
     this._daysComponent = new DaysComponent();
-    this._statsComponent = new StatsComponent(this._pointsModel);
 
     this._dayComponents = [];
     this._pointControllers = [];
@@ -90,6 +88,8 @@ export default class TripController {
     this._creatingPoint = null;
 
     this._sortType = SortType.EVENT;
+
+    this._dataChangeHandlers = [];
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
@@ -100,9 +100,7 @@ export default class TripController {
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
-  renderPoints() {
-    this._removeStatistics();
-
+  render() {
     const points = this._pointsModel.getPoints();
 
     render(this._containerElement, this._eventsComponent);
@@ -115,18 +113,17 @@ export default class TripController {
       render(eventsElement, this._tripSortComponent);
       render(eventsElement, this._daysComponent);
 
+      this._tripSortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+
       this._onSortTypeChange(this._sortType);
     }
   }
 
-  renderStatistics() {
+  destroy() {
     this._removePoints();
 
+    remove(this._tripSortComponent);
     remove(this._eventsComponent);
-
-    render(this._containerElement, this._statsComponent);
-
-    this._statsComponent.rerender();
   }
 
   createPoint() {
@@ -141,16 +138,20 @@ export default class TripController {
     this._creatingPoint.render(emptyPoint, Mode.ADDING);
   }
 
+  setDataChangeHandler(handler) {
+    this._dataChangeHandlers.push(handler);
+  }
+
+  _callHandlers(handlers) {
+    handlers.forEach((handler) => handler());
+  }
+
   _removePoints() {
     this._pointControllers.forEach((pointController) => pointController.destroy());
     this._pointControllers = [];
 
     this._dayComponents.forEach((dayComponent) => remove(dayComponent));
     this._dayComponents = [];
-  }
-
-  _removeStatistics() {
-    remove(this._statsComponent);
   }
 
   _updatePoints() {
@@ -193,6 +194,8 @@ export default class TripController {
         pointController.render(newData);
       }
     }
+
+    this._callHandlers(this._dataChangeHandlers);
   }
 
   _onViewChange() {
@@ -229,6 +232,8 @@ export default class TripController {
 
         break;
     }
+
+    console.log(this._sortType);
   }
 
   _onFilterChange() {

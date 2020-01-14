@@ -1,5 +1,5 @@
 import FilterComponent from '../components/filter';
-import {render, replace, RenderPosition} from '../utils/render';
+import {render, replace, remove, RenderPosition} from '../utils/render';
 import {FilterType} from '../const';
 
 export default class FilterController {
@@ -37,6 +37,12 @@ export default class FilterController {
     } else {
       render(this._containerElement, this._filterComponent, RenderPosition.AFTEREND);
     }
+  }
+
+  destroy() {
+    remove(this._filterComponent);
+
+    this._filterComponent = null;
   }
 
   _onDataChange() {
