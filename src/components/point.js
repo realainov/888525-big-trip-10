@@ -5,12 +5,12 @@ import {typeMap} from '../const';
 const createOptionsMarkup = (options) => {
   return options
     .slice(0, 3)
-    .map((item) => {
+    .map((option) => {
       return (
         `<li class="event__offer">
-            <span class="event__offer-title">${item.name}</span>
+            <span class="event__offer-title">${option.name}</span>
             +
-            &euro; <span class="event__offer-price">${item.price}</span>
+            &euro; <span class="event__offer-price">${option.price}</span>
            </li>`
       );
     })

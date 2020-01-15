@@ -39,10 +39,10 @@ const OPTIONS = [
 
 export const generateOptions = (isAllUnchecked = false) => {
   return OPTIONS
-    .map((item) => {
+    .map((option) => {
       return {
-        name: item.name,
-        type: item.type,
+        name: option.name,
+        type: option.type,
         price: generateNumber(200),
         isChecked: isAllUnchecked ? false : generateNumber(1)
       };

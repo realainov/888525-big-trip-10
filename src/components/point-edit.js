@@ -342,29 +342,29 @@ export default class PointEditComponent extends AbstractSmartComponent {
       this.rerender();
     });
 
-    this.findElements(`.event__offer-selector`).forEach((item, i) => {
-      item.addEventListener(`change`, () => {
+    this.findElements(`.event__offer-selector`).forEach((element, i) => {
+      element.addEventListener(`change`, () => {
         this._tempPoint.options[i] = {
-          name: item.querySelector(`.event__offer-title`).textContent,
-          type: item.querySelector(`.event__offer-checkbox`).name.substring(OPTION_NAME_PREFIX.length),
-          price: item.querySelector(`.event__offer-price`).textContent,
-          isChecked: item.querySelector(`.event__offer-checkbox`).checked
+          name: element.querySelector(`.event__offer-title`).textContent,
+          type: element.querySelector(`.event__offer-checkbox`).name.substring(OPTION_NAME_PREFIX.length),
+          price: element.querySelector(`.event__offer-price`).textContent,
+          isChecked: element.querySelector(`.event__offer-checkbox`).checked
         };
       });
     });
   }
 
   _parseFormData(formData) {
-    const options = Array.from(this.findElements(`.event__offer-selector`)).map((item) => {
+    const options = Array.from(this.findElements(`.event__offer-selector`)).map((element) => {
       return {
-        name: item.querySelector(`.event__offer-title`).textContent,
-        type: item.querySelector(`.event__offer-checkbox`).name.substring(OPTION_NAME_PREFIX.length),
-        price: item.querySelector(`.event__offer-price`).textContent,
-        isChecked: item.querySelector(`.event__offer-checkbox`).checked
+        name: element.querySelector(`.event__offer-title`).textContent,
+        type: element.querySelector(`.event__offer-checkbox`).name.substring(OPTION_NAME_PREFIX.length),
+        price: element.querySelector(`.event__offer-price`).textContent,
+        isChecked: element.querySelector(`.event__offer-checkbox`).checked
       };
     });
 
-    const photos = Array.from(this.findElements(`.event__photo`)).map((item) => item.src);
+    const photos = Array.from(this.findElements(`.event__photo`)).map((element) => element.src);
 
     return {
       city: formData.get(`event-destination`),
