@@ -158,7 +158,16 @@ export default class TripController {
     const isWithDates = this._sortType === SortType.EVENT;
 
     this._removePoints();
-    this._renderPoints(this._pointsModel.getPoints(), isWithDates);
+
+    const isPoints = this._pointsModel.getAllPoints().length !== 0;
+
+    if (isPoints) {
+      this._renderPoints(this._pointsModel.getPoints(), isWithDates);
+    } else {
+      const eventsElement = this._eventsComponent.getElement();
+
+      render(eventsElement, this._noPoitsComponent);
+    }
   }
 
   _renderPoints(points, isWithDates) {

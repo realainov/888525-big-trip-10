@@ -46,10 +46,6 @@ export default class AppController {
     this._filterController.render();
 
     this._addPointButtonElement.addEventListener(`click`, () => {
-      this._statsComponent.destroyCharts();
-
-      remove(this._statsComponent);
-
       this._filterController.render();
       this._tripController.render();
       this._tripController.createPoint();
