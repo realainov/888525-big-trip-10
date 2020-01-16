@@ -65,13 +65,11 @@ const createPhotosMarkup = (photos) => {
     .join(`\n`);
 };
 
-const createCityMarkup = (cities, currentCity) => {
+const createCityMarkup = (cities) => {
   return cities
-    .slice()
-    .sort()
     .map((city) => {
       return (
-        `<option value="${city}" ${city === currentCity ? `selected` : ``}>${city}</option>`
+        `<option value="${city}"></option>`
       );
     })
     .join(`\n`);
@@ -116,9 +114,10 @@ const createTemplate = (point, tempPoint, isAddingMode) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${typeMap[type]}
           </label>
-          <select class="event__input  event__input--destination" id="event-destination-1" name="event-destination">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" autocomplete="off">
+          <datalist id="destination-list-1">
             ${cityMarkup}
-          </select>
+          </datalist>
         </div>
 
         <div class="event__field-group  event__field-group--time">
@@ -305,13 +304,16 @@ export default class PointEditComponent extends AbstractSmartComponent {
     const eventDestinationElement = this.findElement(`#event-destination-1`);
 
     eventDestinationElement.addEventListener(`change`, () => {
-      this._tempPoint.city = eventDestinationElement.value;
-      this._tempPoint.description = generateDescription();
-      this._tempPoint.photos = generatePhotos();
+      if (CITIES.indexOf(eventDestinationElement.value) === -1) {
+        eventDestinationElement.value = this._tempPoint.city;
+      } else {
+        this._tempPoint.city = eventDestinationElement.value;
+        this._tempPoint.description = generateDescription();
+        this._tempPoint.photos = generatePhotos();
 
-      this.rerender();
+        this.rerender();
+      }
     });
-
 
     const startDateElement = this.findElement(`#event-start-time-1`);
 
