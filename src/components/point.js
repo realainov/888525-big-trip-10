@@ -4,6 +4,7 @@ import {typeMap} from '../const';
 
 const createOptionsMarkup = (options) => {
   return options
+    .filter((option) => option.isChecked)
     .slice(0, 3)
     .map((option) => {
       return (

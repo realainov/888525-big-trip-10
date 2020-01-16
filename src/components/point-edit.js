@@ -5,6 +5,7 @@ import {generateDescription, generateOptions, generatePhotos} from '../data/poin
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
+import lodash from 'lodash';
 
 const OPTION_NAME_PREFIX = `event-offer-`;
 
@@ -64,11 +65,13 @@ const createPhotosMarkup = (photos) => {
     .join(`\n`);
 };
 
-const createCityMarkup = (cities) => {
+const createCityMarkup = (cities, currentCity) => {
   return cities
+    .slice()
+    .sort()
     .map((city) => {
       return (
-        `<option value="${city}"></option>`
+        `<option value="${city}" ${city === currentCity ? `selected` : ``}>${city}</option>`
       );
     })
     .join(`\n`);
@@ -90,9 +93,9 @@ const createTemplate = (point, tempPoint, isAddingMode) => {
   const typesMarkup = createTypeGroupMarkup(TYPE_GROUPS, type);
   const optionsMarkup = createOptionsMarkup(options);
   const photosMarkup = createPhotosMarkup(photos);
-  const cityMarkup = createCityMarkup(CITIES);
+  const cityMarkup = createCityMarkup(CITIES, city);
 
-  const isDisabledSaveButton = (!price || !city);
+  const isDisabledSaveButton = (!time.start || !time.end || !price || !city);
 
   return (
     `<form class="event  event--edit ${isAddingMode ? `trip-events__item` : ``}" action="#" method="post">
@@ -113,10 +116,9 @@ const createTemplate = (point, tempPoint, isAddingMode) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${typeMap[type]}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" autocomplete="off">
-          <datalist id="destination-list-1">
+          <select class="event__input  event__input--destination" id="event-destination-1" name="event-destination">
             ${cityMarkup}
-          </datalist>
+          </select>
         </div>
 
         <div class="event__field-group  event__field-group--time">
@@ -188,7 +190,7 @@ export default class PointEditComponent extends AbstractSmartComponent {
     this._point = point;
     this._mode = mode;
 
-    this._tempPoint = Object.assign({}, this._point);
+    this._tempPoint = lodash.cloneDeep(this._point);
 
     this._rollupButtonClickHandler = null;
     this._editFormSubmitHandler = null;
@@ -222,7 +224,7 @@ export default class PointEditComponent extends AbstractSmartComponent {
   }
 
   reset() {
-    this._tempPoint = Object.assign({}, this._point);
+    this._tempPoint = lodash.cloneDeep(this._point);
 
     this.rerender();
   }
@@ -302,17 +304,14 @@ export default class PointEditComponent extends AbstractSmartComponent {
 
     const eventDestinationElement = this.findElement(`#event-destination-1`);
 
-    eventDestinationElement.addEventListener(`focus`, () => {
-      eventDestinationElement.removeAttribute(`value`);
+    eventDestinationElement.addEventListener(`change`, () => {
+      this._tempPoint.city = eventDestinationElement.value;
+      this._tempPoint.description = generateDescription();
+      this._tempPoint.photos = generatePhotos();
 
-      eventDestinationElement.addEventListener(`change`, () => {
-        this._tempPoint.city = eventDestinationElement.value;
-        this._tempPoint.description = generateDescription();
-        this._tempPoint.photos = generatePhotos();
-
-        this.rerender();
-      });
+      this.rerender();
     });
+
 
     const startDateElement = this.findElement(`#event-start-time-1`);
 
@@ -328,10 +327,8 @@ export default class PointEditComponent extends AbstractSmartComponent {
 
     const eventPriceElement = this.findElement(`#event-price-1`);
 
-    eventPriceElement.addEventListener(`change`, () => {
+    eventPriceElement.addEventListener(`input`, () => {
       this._tempPoint.price = eventPriceElement.value;
-
-      this.rerender();
     });
 
     const eventFavoriteButtonElement = this.findElement(`#event-favorite-1`);

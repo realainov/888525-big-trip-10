@@ -65,6 +65,8 @@ export default class PointController {
       const data = this._pointEditComponent.getData();
 
       this._onDataChange(this, point, data);
+
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
     });
 
     this._pointEditComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, point, null));

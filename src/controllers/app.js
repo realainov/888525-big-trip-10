@@ -31,9 +31,9 @@ export default class AppController {
   }
 
   render() {
-    const TASK_COUNT = 4;
+    const POINT_COUNT = 4;
 
-    const points = generateEvents(TASK_COUNT);
+    const points = generateEvents(POINT_COUNT);
 
     this._pointsModel = new PointsModel(points);
 
