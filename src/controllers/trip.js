@@ -9,9 +9,8 @@ import {render, remove} from '../utils/render';
 import {formatDate} from '../utils/common';
 import {emptyPoint} from './point';
 
-const renderPoint = (container, point, onDataChange, onViewChange) => {
-
-  const pointController = new PointController(container, onDataChange, onViewChange);
+const renderPoint = (containerElement, point, onDataChange, onViewChange) => {
+  const pointController = new PointController(containerElement, onDataChange, onViewChange);
 
   pointController.render(point);
 
@@ -28,7 +27,7 @@ const renderPoints = (containerElement, points, onDataChange, onViewChange, isWi
     const dates = new Set();
 
     points.forEach((point) => {
-      dates.add(formatDate(point.time.start));
+      dates.add(formatDate(point.date.from));
     });
 
     const events = {};
@@ -38,7 +37,7 @@ const renderPoints = (containerElement, points, onDataChange, onViewChange, isWi
     });
 
     points.forEach((point) => {
-      events[formatDate(point.time.start)].push(point);
+      events[formatDate(point.date.from)].push(point);
     });
 
     Object.entries(events).forEach((event, index) => {
@@ -73,9 +72,10 @@ const renderPoints = (containerElement, points, onDataChange, onViewChange, isWi
 };
 
 export default class TripController {
-  constructor(containerElement, pointsModel) {
+  constructor(containerElement, pointsModel, api) {
     this._containerElement = containerElement;
     this._pointsModel = pointsModel;
+    this._api = api;
 
     this._eventsComponent = new EventsComponent();
     this._noPoitsComponent = new NoPointsComponent();
@@ -191,7 +191,14 @@ export default class TripController {
     } else if (newData === null) {
       this._pointsModel.removePoint(oldData.id);
     } else {
-      this._pointsModel.updatePoint(newData, oldData.id);
+      this._api.updatePoint(newData, oldData.id)
+        .then((point) => {
+          const isSuccess = this._pointsModel.updatePoint(point, oldData.id);
+
+          if (isSuccess) {
+            this._updatePoints();
+          }
+        });
     }
 
     this._updatePoints();
@@ -213,14 +220,14 @@ export default class TripController {
 
     switch (sortType) {
       case SortType.EVENT:
-        sortedPoints = points.slice().sort((a, b) => a.time.start - b.time.start);
+        sortedPoints = points.slice().sort((a, b) => a.date.from - b.date.from);
 
         this._removePoints();
         this._renderPoints(sortedPoints);
 
         break;
       case SortType.TIME:
-        sortedPoints = points.slice().sort((a, b) => (b.time.end - b.time.start) - (a.time.end - a.time.start));
+        sortedPoints = points.slice().sort((a, b) => (b.date.to - b.date.from) - (a.date.to - a.date.from));
 
         this._removePoints();
         this._renderPoints(sortedPoints, false);

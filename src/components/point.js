@@ -2,16 +2,15 @@ import AbstractComponent from './abstract-component';
 import {calculateDuration, formatTime, formatDateTime} from '../utils/common';
 import {typeMap} from '../const';
 
-const createOptionsMarkup = (options) => {
-  return options
-    .filter((option) => option.isChecked)
+const createOffersMarkup = (offers) => {
+  return offers
     .slice(0, 3)
-    .map((option) => {
+    .map((offer) => {
       return (
         `<li class="event__offer">
-            <span class="event__offer-title">${option.name}</span>
+            <span class="event__offer-title">${offer.title}</span>
             +
-            &euro; <span class="event__offer-price">${option.price}</span>
+            &euro; <span class="event__offer-price">${offer.price}</span>
            </li>`
       );
     })
@@ -19,24 +18,24 @@ const createOptionsMarkup = (options) => {
 };
 
 const createTemplate = (point) => {
-  const {type, city, price, options, time} = point;
+  const {type, destination, price, offers, date} = point;
 
-  const startTime = formatTime(time.start);
-  const endTime = formatTime(time.end);
+  const startTime = formatTime(date.from);
+  const endTime = formatTime(date.to);
 
-  const startDateTime = formatDateTime(time.start);
-  const endDateTime = formatDateTime(time.end);
+  const startDateTime = formatDateTime(date.from);
+  const endDateTime = formatDateTime(date.to);
 
-  const duration = calculateDuration(time.end - time.start);
+  const duration = calculateDuration(date.to - date.from);
 
-  const optionsMarkup = createOptionsMarkup(options);
+  const offersMarkup = createOffersMarkup(offers);
 
   return (
     `<div class="event">
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${typeMap[type]} ${city}</h3>
+      <h3 class="event__title">${typeMap[type]} ${destination.name}</h3>
 
       <div class="event__schedule">
         <p class="event__time">
@@ -53,7 +52,7 @@ const createTemplate = (point) => {
 
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${optionsMarkup}
+        ${offersMarkup}
       </ul>
 
       <button class="event__rollup-btn" type="button">

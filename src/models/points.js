@@ -18,7 +18,7 @@ export default class Points {
   }
 
   getAllPoints() {
-    return this._points.slice().sort((a, b) => a.time.start - b.time.start);
+    return this._points.slice().sort((a, b) => a.date.from - b.date.from);
   }
 
   getFilterPoints(filterType) {

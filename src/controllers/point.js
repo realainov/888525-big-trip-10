@@ -1,20 +1,22 @@
+import PointModel from '../models/point';
 import PointsComponent from '../components/points';
 import PointComponent from '../components/point';
 import PointEditComponent from '../components/point-edit';
 import {render, replace, remove} from '../utils/render.js';
 import {Mode} from '../const';
 import {RenderPosition} from '../utils/render';
-import {generateOptions} from '../data/points';
 
 export const emptyPoint = {
-  description: ``,
-  city: ``,
-  options: generateOptions(true),
-  photos: [],
+  destination: {
+    name: ``,
+    description: ``,
+    pictures: []
+  },
+  offers: [],
   price: ``,
-  time: {
-    start: new Date(),
-    end: new Date()
+  date: {
+    from: new Date(),
+    to: new Date()
   },
   type: `transport`
 };
@@ -62,7 +64,7 @@ export default class PointController {
     this._pointEditComponent.setEditFormSubmitHandler((evt) => {
       evt.preventDefault();
 
-      const data = this._pointEditComponent.getData();
+      const data = new PointModel(this._pointEditComponent.getData());
 
       this._onDataChange(this, point, data);
 

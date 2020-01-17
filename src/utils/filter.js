@@ -3,7 +3,7 @@ import {FilterType} from '../const';
 
 export const getFuturePoints = (points) => {
   return points.filter((point) => {
-    const date = point.time.start;
+    const date = point.date.from;
 
     return isFuturePoint(date);
   });
@@ -11,7 +11,7 @@ export const getFuturePoints = (points) => {
 
 export const getPastPoints = (points) => {
   return points.filter((point) => {
-    const date = point.time.start;
+    const date = point.date.from;
 
     if (!date) {
       return false;

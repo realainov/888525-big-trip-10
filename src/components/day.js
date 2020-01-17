@@ -3,8 +3,8 @@ import {formatMarkupDate, formatDateTime} from "../utils/common";
 
 const createTemplate = (points, index) => {
   if (points !== undefined && index !== undefined) {
-    const dateTime = formatDateTime(points[0].time.start);
-    const date = formatMarkupDate(points[0].time.start);
+    const dateTime = formatDateTime(points[0].date.from);
+    const date = formatMarkupDate(points[0].date.from);
 
     return (
       `<li class="trip-days__item day">

@@ -1,3 +1,4 @@
+import API from '../api';
 import PointsModel from '../models/points';
 import MenuComponent from '../components/menu';
 import StatsComponent from '../components/stats';
@@ -6,10 +7,13 @@ import FilterController from './filter';
 import RouteController from './route';
 import {render, remove, RenderPosition} from '../utils/render';
 import {MenuItems} from '../const';
-import {generateEvents} from '../data/points';
+
+const URL = `https://htmlacademy-es-10.appspot.com/big-trip`;
+const AUTHORIZATION = `Basic eo0w590ik29889a`;
 
 export default class AppController {
   constructor() {
+    this._api = new API(URL, AUTHORIZATION);
     this._pointsModel = null;
 
     this._menuComponent = new MenuComponent();
@@ -31,32 +35,32 @@ export default class AppController {
   }
 
   render() {
-    const POINT_COUNT = 4;
-
-    const points = generateEvents(POINT_COUNT);
-
-    this._pointsModel = new PointsModel(points);
-
-    this._routeController = new RouteController(this._tripInfoElement, this._pointsModel);
-    this._routeController.render();
-
-    render(this._tripControlsHeaderElements[0], this._menuComponent, RenderPosition.AFTEREND);
-
-    this._filterController = new FilterController(this._tripControlsHeaderElements[1], this._pointsModel);
-    this._filterController.render();
-
-    this._addPointButtonElement.addEventListener(`click`, () => {
+    Promise.all([
+      this._api.getPoints(),
+      this._api.getDestinations(),
+      this._api.getTypesOffers()
+    ]).then((values) => {
+      this._pointsModel = new PointsModel(...values);
+      this._routeController = new RouteController(this._tripInfoElement, this._pointsModel);
+      this._routeController.render();
+      this._filterController = new FilterController(this._tripControlsHeaderElements[1], this._pointsModel);
       this._filterController.render();
+
+      this._tripController = new TripController(this._pageContainerElement, this._pointsModel, this._api);
       this._tripController.render();
-      this._tripController.createPoint();
 
-      this._addPointButtonElement.disabled = true;
+      this._tripController.setDataChangeHandler(this._onDataChange);
+
+      render(this._tripControlsHeaderElements[0], this._menuComponent, RenderPosition.AFTEREND);
+
+      this._addPointButtonElement.addEventListener(`click`, () => {
+        this._filterController.render();
+        this._tripController.render();
+        this._tripController.createPoint();
+
+        this._addPointButtonElement.disabled = true;
+      });
     });
-
-    this._tripController = new TripController(this._pageContainerElement, this._pointsModel);
-    this._tripController.render();
-
-    this._tripController.setDataChangeHandler(this._onDataChange);
   }
 
   _onMenuItemClick(menuItem) {

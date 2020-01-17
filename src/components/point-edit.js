@@ -1,24 +1,24 @@
+import Repository from '../repository';
 import AbstractSmartComponent from './abstract-smart-component';
-import {makeWordCapitalize, formatTime, formatDate} from '../utils/common';
-import {TYPE_GROUPS, typeMap, CITIES, Mode} from '../const';
-import {generateDescription, generateOptions, generatePhotos} from '../data/points';
+import {makeWordCapitalize, makeWordWithDashes, formatTime, formatDate} from '../utils/common';
+import {TYPE_GROUPS, typeMap, Mode} from '../const';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
 import lodash from 'lodash';
 
-const OPTION_NAME_PREFIX = `event-offer-`;
+const createOffersMarkup = (offers) => {
+  return offers
+    .map((offer) => {
+      const type = makeWordWithDashes(offer.title);
 
-const createOptionsMarkup = (options) => {
-  return options
-    .map((option) => {
       return (
         `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${option.type}-1" type="checkbox" name="event-offer-${option.type}" ${option.isChecked ? `checked` : ``}>
-          <label class="event__offer-label" for="event-offer-${option.type}-1">
-            <span class="event__offer-title">${option.name}</span>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}" type="checkbox" name="event-offer-${type}" ${offer.isChecked ? `checked` : ``}>
+          <label class="event__offer-label" for="event-offer-${type}">
+            <span class="event__offer-title">${offer.title}</span>
             &plus;
-            &euro;&nbsp;<span class="event__offer-price">${option.price}</span>
+            &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
           </label>
         </div>`
       );
@@ -59,7 +59,7 @@ const createPhotosMarkup = (photos) => {
   return photos
     .map((photo) => {
       return (
-        `<img class="event__photo" src="${photo}" alt="Event photo">`
+        `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
       );
     })
     .join(`\n`);
@@ -75,25 +75,32 @@ const createCityMarkup = (cities) => {
     .join(`\n`);
 };
 
-const createTemplate = (point, tempPoint, isAddingMode) => {
+const createTemplate = (point, tempPoint, destinations, typesOffers, isAddingMode) => {
   const {isFavorite} = point;
-  const {city: currentCity, description, options, photos, price: currentPrice, time, type} = tempPoint;
+  const {destination: currentDestination, offers: selectedOffers, price: currentPrice, date, type: currentType} = tempPoint;
 
-  const city = he.encode(currentCity);
+  const cities = Repository.getCities();
+  const offers = Repository.getOffers(currentType);
+
+  offers.forEach((offer) => {
+    offer[`isChecked`] = !!selectedOffers.find((selectedOffer) => selectedOffer.title === offer.title);
+  });
+
+  const city = he.encode(currentDestination.name);
   const price = he.encode(currentPrice.toString());
 
-  const startDate = formatDate(time.start);
-  const endDate = formatDate(time.end);
+  const startDate = formatDate(date.from);
+  const endDate = formatDate(date.to);
 
-  const startTime = formatTime(time.start);
-  const endTime = formatTime(time.end);
+  const startTime = formatTime(date.from);
+  const endTime = formatTime(date.to);
 
-  const typesMarkup = createTypeGroupMarkup(TYPE_GROUPS, type);
-  const optionsMarkup = createOptionsMarkup(options);
-  const photosMarkup = createPhotosMarkup(photos);
-  const cityMarkup = createCityMarkup(CITIES, city);
+  const typesMarkup = createTypeGroupMarkup(TYPE_GROUPS, currentType);
+  const offersMarkup = createOffersMarkup(offers);
+  const photosMarkup = createPhotosMarkup(currentDestination.pictures);
+  const cityMarkup = createCityMarkup(cities, city);
 
-  const isDisabledSaveButton = (!time.start || !time.end || !price || !city);
+  const isDisabledSaveButton = (!date.from || !date.to || !price || !currentDestination.name);
 
   return (
     `<form class="event  event--edit ${isAddingMode ? `trip-events__item` : ``}" action="#" method="post">
@@ -101,7 +108,7 @@ const createTemplate = (point, tempPoint, isAddingMode) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${currentType}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -112,7 +119,7 @@ const createTemplate = (point, tempPoint, isAddingMode) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${typeMap[type]}
+            ${typeMap[currentType]}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" autocomplete="off">
           <datalist id="destination-list-1">
@@ -157,19 +164,19 @@ const createTemplate = (point, tempPoint, isAddingMode) => {
         
       </header>
       
-      ${city || (optionsMarkup && description) ? `<section class="event__details">
+      ${city || (offersMarkup && currentDestination.description) ? `<section class="event__details">
 
-        ${optionsMarkup ? `<section class="event__section  event__section--offers">
+        ${offersMarkup ? `<section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${optionsMarkup}
+            ${offersMarkup}
           </div>
         </section>` : ``}
         
-        ${description ? ` <section class="event__section  event__section--destination">
+        ${currentDestination.description ? ` <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
+          <p class="event__destination-description">${currentDestination.description}</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
@@ -205,7 +212,7 @@ export default class PointEditComponent extends AbstractSmartComponent {
   getTemplate() {
     const isClearRollupButton = this._mode === Mode.ADDING;
 
-    return createTemplate(this._point, this._tempPoint, isClearRollupButton);
+    return createTemplate(this._point, this._tempPoint, this._destinations, this._typesOffers, isClearRollupButton);
   }
 
   recoveryEventListeners() {
@@ -286,7 +293,7 @@ export default class PointEditComponent extends AbstractSmartComponent {
       onClose: () => {
         this._endFlatpickr.set(`minDate`, startDateElement.value);
 
-        this._tempPoint.time.end = this._endFlatpickr.selectedDates[0];
+        this._tempPoint.date.to = this._endFlatpickr.selectedDates[0];
       }
     });
   }
@@ -295,8 +302,8 @@ export default class PointEditComponent extends AbstractSmartComponent {
     const eventTypeListElement = this.findElement(`.event__type-list`);
 
     eventTypeListElement.addEventListener(`change`, (evt) => {
-      this._tempPoint.options = generateOptions(true);
       this._tempPoint.type = evt.target.value;
+      this._tempPoint.offers = [];
 
       this.rerender();
     });
@@ -304,12 +311,10 @@ export default class PointEditComponent extends AbstractSmartComponent {
     const eventDestinationElement = this.findElement(`#event-destination-1`);
 
     eventDestinationElement.addEventListener(`change`, () => {
-      if (CITIES.indexOf(eventDestinationElement.value) === -1) {
-        eventDestinationElement.value = this._tempPoint.city;
+      if (Repository.getDestination(eventDestinationElement.value) === -1) {
+        eventDestinationElement.value = this._tempPoint.destination.name;
       } else {
-        this._tempPoint.city = eventDestinationElement.value;
-        this._tempPoint.description = generateDescription();
-        this._tempPoint.photos = generatePhotos();
+        this._tempPoint.destination = Repository.getDestination(eventDestinationElement.value);
 
         this.rerender();
       }
@@ -318,19 +323,21 @@ export default class PointEditComponent extends AbstractSmartComponent {
     const startDateElement = this.findElement(`#event-start-time-1`);
 
     startDateElement.addEventListener(`change`, () => {
-      this._tempPoint.time.start = this._startFlatpickr.selectedDates[0];
+      this._tempPoint.date.from = this._startFlatpickr.selectedDates[0];
     });
 
     const endDateElement = this.findElement(`#event-end-time-1`);
 
     endDateElement.addEventListener(`change`, () => {
-      this._tempPoint.time.end = this._endFlatpickr.selectedDates[0];
+      this._tempPoint.date.to = this._endFlatpickr.selectedDates[0];
     });
 
     const eventPriceElement = this.findElement(`#event-price-1`);
 
-    eventPriceElement.addEventListener(`input`, () => {
+    eventPriceElement.addEventListener(`change`, () => {
       this._tempPoint.price = eventPriceElement.value;
+
+      this.rerender();
     });
 
     const eventFavoriteButtonElement = this.findElement(`#event-favorite-1`);
@@ -341,42 +348,57 @@ export default class PointEditComponent extends AbstractSmartComponent {
       this.rerender();
     });
 
-    this.findElements(`.event__offer-selector`).forEach((element, i) => {
+    this.findElements(`.event__offer-selector`).forEach((element) => {
       element.addEventListener(`change`, () => {
-        this._tempPoint.options[i] = {
-          name: element.querySelector(`.event__offer-title`).textContent,
-          type: element.querySelector(`.event__offer-checkbox`).name.substring(OPTION_NAME_PREFIX.length),
-          price: element.querySelector(`.event__offer-price`).textContent,
-          isChecked: element.querySelector(`.event__offer-checkbox`).checked
-        };
+        if (element.querySelector(`.event__offer-checkbox`).checked) {
+          this._tempPoint.offers.push({
+            title: element.querySelector(`.event__offer-title`).textContent,
+            price: element.querySelector(`.event__offer-price`).textContent
+          });
+        } else {
+          const index = this._tempPoint.offers.findIndex((offer) => offer.title === element.querySelector(`.event__offer-title`).textContent);
+
+          this._tempPoint.offers = [
+            ...this._tempPoint.offers.slice(0, index),
+            ...this._tempPoint.offers.slice(index + 1)
+          ];
+        }
       });
     });
   }
 
   _parseFormData(formData) {
-    const options = Array.from(this.findElements(`.event__offer-selector`)).map((element) => {
+    const offers = Array.from(this.findElements(`.event__offer-selector`))
+      .filter((element) => element.querySelector(`.event__offer-checkbox`).checked)
+      .map((element) => {
+        return {
+          title: element.querySelector(`.event__offer-title`).textContent,
+          price: +element.querySelector(`.event__offer-price`).textContent
+        };
+      });
+
+    const photos = Array.from(this.findElements(`.event__photo`)).map((element) => {
       return {
-        name: element.querySelector(`.event__offer-title`).textContent,
-        type: element.querySelector(`.event__offer-checkbox`).name.substring(OPTION_NAME_PREFIX.length),
-        price: element.querySelector(`.event__offer-price`).textContent,
-        isChecked: element.querySelector(`.event__offer-checkbox`).checked
+        src: element.src,
+        description: element.alt
       };
     });
 
-    const photos = Array.from(this.findElements(`.event__photo`)).map((element) => element.src);
+    const startDate = this._startFlatpickr.selectedDates[0];
+    const endDate = this._endFlatpickr.selectedDates[0];
 
     return {
-      city: formData.get(`event-destination`),
-      description: this.findElement(`.event__destination-description`).textContent,
-      isFavorite: formData.get(`event-favorite`),
-      options,
-      photos,
-      price: formData.get(`event-price`),
-      time: {
-        start: this._startFlatpickr.selectedDates[0],
-        end: this._endFlatpickr.selectedDates[0]
+      [`destination`]: {
+        [`name`]: formData.get(`event-destination`),
+        [`description`]: this.findElement(`.event__destination-description`).textContent,
+        [`pictures`]: photos
       },
-      type: formData.get(`event-type`)
+      [`is_favorite`]: Boolean(formData.get(`event-favorite`)),
+      [`offers`]: offers,
+      [`base_price`]: +formData.get(`event-price`),
+      [`date_from`]: new Date(startDate),
+      [`date_to`]: new Date(endDate),
+      [`type`]: formData.get(`event-type`)
     };
   }
 }

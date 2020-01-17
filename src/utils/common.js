@@ -26,6 +26,12 @@ export const makeWordCapitalize = (string) => {
   return string[0].toUpperCase() + string.substring(1);
 };
 
+export const makeWordWithDashes = (string) => {
+  string = string.toString().toLowerCase();
+
+  return string.split(` `).join(`-`);
+};
+
 export const calculateDuration = (duration) => {
   const result = Math.floor(duration / (1000 * 60));
 

@@ -7,8 +7,8 @@ const calculateTotalPrice = (points) => {
   points.forEach((point) => {
     totalPrice += +point.price;
 
-    point.options.forEach((option) => {
-      totalPrice = option.isChecked ? totalPrice + +option.price : totalPrice;
+    point.offers.forEach((offer) => {
+      totalPrice = offer.isChecked ? totalPrice + +offer.price : totalPrice;
     });
   });
 
@@ -20,16 +20,16 @@ const createRouteMarkup = (points) => {
     const startPoint = points[0];
     const endPoint = points[points.length - 1];
 
-    const startDate = formatMarkupDate(startPoint.time.start);
+    const startDate = formatMarkupDate(startPoint.date.from);
 
-    let endDate = formatMarkupDate(endPoint.time.start);
+    let endDate = formatMarkupDate(endPoint.date.to);
 
     endDate = endDate.substring(0, 3) === startDate.substring(0, 3) ? endDate.substring(4) : endDate;
 
-    const startCity = startPoint.city;
-    const endCity = endPoint.city;
+    const startCity = startPoint.destination.name;
+    const endCity = endPoint.destination.name;
 
-    const route = `${startCity} &mdash; ${points.length === 3 ? `${points[1].city}` : `...`} &mdash; ${endCity}`;
+    const route = `${startCity} &mdash; ${points.length === 3 ? `${points[1].destination.name}` : `...`} &mdash; ${endCity}`;
 
     return (
       `<div class="trip-info__main">

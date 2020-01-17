@@ -103,12 +103,12 @@ const renderTrasportStats = (containerElement, points) => {
 };
 
 const renderTimeSpendStats = (containerElement, points) => {
-  const cities = new Set(points.map((point) => point.city));
+  const cities = new Set(points.map((point) => point.destination.name));
 
   const times = Array.from(cities).map((city) => {
     return points
-      .filter((point) => point.city === city)
-      .reduce((sum, point) => sum + +point.time.start.getHours(), 0);
+      .filter((point) => point.destination.name === city)
+      .reduce((sum, point) => sum + +point.date.from.getHours(), 0);
   });
 
   return new ApexCharts(containerElement, {
