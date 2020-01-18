@@ -7,6 +7,13 @@ import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
 import lodash from 'lodash';
 
+const DefaultData = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`,
+  isDisabledDeleteButton: false,
+  isDisabledSaveButton: false
+};
+
 const createOffersMarkup = (offers) => {
   return offers
     .map((offer) => {
@@ -75,9 +82,9 @@ const createCityMarkup = (cities) => {
     .join(`\n`);
 };
 
-const createTemplate = (point, tempPoint, destinations, typesOffers, isAddingMode) => {
+const createTemplate = (point, tempPoint, externalData, isAddingMode) => {
   const {isFavorite} = point;
-  const {destination: currentDestination, offers: selectedOffers, price: currentPrice, date, type: currentType} = tempPoint;
+  const {destination, offers: selectedOffers, price: currentPrice, date, type: currentType} = tempPoint;
 
   const cities = Repository.getCities();
   const offers = Repository.getOffers(currentType);
@@ -90,7 +97,7 @@ const createTemplate = (point, tempPoint, destinations, typesOffers, isAddingMod
     offer.price = equalOffer ? equalOffer.price : offer.price;
   });
 
-  const city = he.encode(currentDestination.name);
+  const city = he.encode(destination.name);
   const price = he.encode(currentPrice.toString());
 
   const startDate = formatDate(date.from);
@@ -101,10 +108,14 @@ const createTemplate = (point, tempPoint, destinations, typesOffers, isAddingMod
 
   const typesMarkup = createTypeGroupMarkup(TYPE_GROUPS, currentType);
   const offersMarkup = createOffersMarkup(offers);
-  const photosMarkup = createPhotosMarkup(currentDestination.pictures);
+  const photosMarkup = createPhotosMarkup(destination.pictures);
   const cityMarkup = createCityMarkup(cities, city);
 
-  const isDisabledSaveButton = (!date.from || !date.to || !price || !currentDestination.name);
+  const isDisabledSaveButton = !date.from || !date.to || date.from > date.to || externalData.isDisabledSaveButton;
+  const isDisabledDeleteButton = externalData.isDisabledDeleteButton;
+
+  const deleteButtonText = externalData.deleteButtonText;
+  const saveButtonText = externalData.saveButtonText;
 
   return (
     `<form class="event  event--edit ${isAddingMode ? `trip-events__item` : ``}" action="#" method="post">
@@ -151,8 +162,8 @@ const createTemplate = (point, tempPoint, destinations, typesOffers, isAddingMod
           <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabledSaveButton ? `disabled` : ``}>Save</button>
-        <button class="event__reset-btn" type="reset">${isAddingMode ? `Cancel` : `Delete`}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabledSaveButton ? `disabled` : ``}>${saveButtonText}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabledDeleteButton ? `disabled` : ``}>${isAddingMode ? `Cancel` : deleteButtonText}</button>
 
         <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-1">
@@ -168,7 +179,7 @@ const createTemplate = (point, tempPoint, destinations, typesOffers, isAddingMod
         
       </header>
       
-      ${city || (offersMarkup && currentDestination.description) ? `<section class="event__details">
+      ${city || (offersMarkup && destination.description) ? `<section class="event__details">
 
         ${offersMarkup ? `<section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -178,9 +189,9 @@ const createTemplate = (point, tempPoint, destinations, typesOffers, isAddingMod
           </div>
         </section>` : ``}
         
-        ${currentDestination.description ? ` <section class="event__section  event__section--destination">
+        ${destination.description ? ` <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${currentDestination.description}</p>
+          <p class="event__destination-description">${destination.description}</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
@@ -201,6 +212,7 @@ export default class PointEditComponent extends AbstractSmartComponent {
     this._mode = mode;
 
     this._tempPoint = lodash.cloneDeep(this._point);
+    this._externalData = DefaultData;
 
     this._rollupButtonClickHandler = null;
     this._editFormSubmitHandler = null;
@@ -211,12 +223,13 @@ export default class PointEditComponent extends AbstractSmartComponent {
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
+    this._checkAvailabilityEditFormSubmit();
   }
 
   getTemplate() {
     const isClearRollupButton = this._mode === Mode.ADDING;
 
-    return createTemplate(this._point, this._tempPoint, this._destinations, this._typesOffers, isClearRollupButton);
+    return createTemplate(this._point, this._tempPoint, this._externalData, isClearRollupButton);
   }
 
   recoveryEventListeners() {
@@ -231,7 +244,9 @@ export default class PointEditComponent extends AbstractSmartComponent {
     super.rerender();
 
     this._applyFlatpickr();
+    this._checkAvailabilityEditFormSubmit();
   }
+
 
   reset() {
     this._tempPoint = lodash.cloneDeep(this._point);
@@ -239,10 +254,14 @@ export default class PointEditComponent extends AbstractSmartComponent {
     this.rerender();
   }
 
-  getData() {
+  getFormData() {
     const formData = new FormData(this.getElement());
 
     return this._parseFormData(formData);
+  }
+
+  setExternalData(data) {
+    this._externalData = Object.assign({}, DefaultData, data);
   }
 
   setRollupButtonClickHandler(handler) {
@@ -263,6 +282,15 @@ export default class PointEditComponent extends AbstractSmartComponent {
     this.findElement(`.event__reset-btn`).addEventListener(`click`, handler);
 
     this._deleteButtonClickHandler = handler;
+  }
+
+  _checkAvailabilityEditFormSubmit() {
+    const eventDestinationValue = this.findElement(`#event-destination-1`).value;
+    const eventPriceValue = this.findElement(`#event-price-1`).value;
+
+    const saveButtonElement = this.findElement(`.event__save-btn`);
+
+    saveButtonElement.disabled = !(eventDestinationValue && eventPriceValue);
   }
 
   _applyFlatpickr() {
@@ -314,11 +342,21 @@ export default class PointEditComponent extends AbstractSmartComponent {
 
     const eventDestinationElement = this.findElement(`#event-destination-1`);
 
-    eventDestinationElement.addEventListener(`change`, () => {
-      if (Repository.getDestination(eventDestinationElement.value) === -1) {
-        eventDestinationElement.value = this._tempPoint.destination.name;
+    eventDestinationElement.addEventListener(`input`, () => {
+      if (eventDestinationElement.value) {
+        if (Repository.getDestination(eventDestinationElement.value) === undefined) {
+          eventDestinationElement.value = this._tempPoint.destination.name;
+        } else {
+          this._tempPoint.destination = Repository.getDestination(eventDestinationElement.value);
+
+          this.rerender();
+        }
       } else {
-        this._tempPoint.destination = Repository.getDestination(eventDestinationElement.value);
+        this._tempPoint.destination = {
+          name: ``,
+          description: ``,
+          pictures: []
+        };
 
         this.rerender();
       }
@@ -328,20 +366,24 @@ export default class PointEditComponent extends AbstractSmartComponent {
 
     startDateElement.addEventListener(`change`, () => {
       this._tempPoint.date.from = this._startFlatpickr.selectedDates[0];
+
+      this.rerender();
     });
 
     const endDateElement = this.findElement(`#event-end-time-1`);
 
     endDateElement.addEventListener(`change`, () => {
       this._tempPoint.date.to = this._endFlatpickr.selectedDates[0];
+
+      this.rerender();
     });
 
     const eventPriceElement = this.findElement(`#event-price-1`);
 
-    eventPriceElement.addEventListener(`change`, () => {
+    eventPriceElement.addEventListener(`input`, () => {
       this._tempPoint.price = eventPriceElement.value;
 
-      this.rerender();
+      this._checkAvailabilityEditFormSubmit();
     });
 
     const eventFavoriteButtonElement = this.findElement(`#event-favorite-1`);

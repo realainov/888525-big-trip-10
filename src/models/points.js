@@ -40,7 +40,7 @@ export default class Points {
   addPoint(point) {
     this._points = [].concat(point, this._points);
 
-    this._points.sort((a, b) => a.time.start - b.time.start);
+    this._points.sort((a, b) => a.date.from - b.date.from);
 
     this._callHandlers(this._dataChangeHandlers);
   }

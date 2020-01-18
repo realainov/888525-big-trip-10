@@ -6,6 +6,8 @@ import {render, replace, remove} from '../utils/render.js';
 import {Mode} from '../const';
 import {RenderPosition} from '../utils/render';
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export const emptyPoint = {
   destination: {
     name: ``,
@@ -64,14 +66,28 @@ export default class PointController {
     this._pointEditComponent.setEditFormSubmitHandler((evt) => {
       evt.preventDefault();
 
-      const data = new PointModel(this._pointEditComponent.getData());
+      this._pointEditComponent.setExternalData({
+        saveButtonText: `Saving...`,
+        isDisabledSaveButton: true,
+        isDisabledDeleteButton: true
+      });
+
+      const data = new PointModel(this._pointEditComponent.getFormData());
 
       this._onDataChange(this, point, data);
 
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._pointEditComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, point, null));
+    this._pointEditComponent.setDeleteButtonClickHandler(() => {
+      this._pointEditComponent.setExternalData({
+        deleteButtonText: `Deleting...`,
+        isDisabledSaveButton: true,
+        isDisabledDeleteButton: true
+      });
+
+      this._onDataChange(this, point, null);
+    });
 
     switch (mode) {
       case Mode.DEFAULT:
@@ -112,6 +128,21 @@ export default class PointController {
     remove(this._pointsComponent);
 
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+  }
+
+  shake() {
+    this._pointEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._pointEditComponent.getElement().style.animation = ``;
+
+      this._pointEditComponent.setExternalData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+        isDisabledSaveButton: false,
+        isDisabledDeleteButton: false
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   _replacePointEditToPoint() {

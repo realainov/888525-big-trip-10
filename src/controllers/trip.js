@@ -183,24 +183,47 @@ export default class TripController {
 
       if (newData === null) {
         pointController.destroy();
-      } else {
-        this._pointsModel.addPoint(newData);
 
-        pointController.destroy();
+        this._callHandlers(this._dataChangeHandlers);
+      } else {
+        this._api.addPoint(newData)
+          .then(() => {
+            this._pointsModel.addPoint(newData);
+
+            pointController.destroy();
+
+            this._update();
+          })
+          .catch(() => {
+            pointController.shake();
+          });
       }
     } else if (newData === null) {
-      this._pointsModel.removePoint(oldData.id);
+      this._api.deletePoint(oldData.id)
+        .then(() => {
+          this._pointsModel.removePoint(oldData.id);
+
+          this._update();
+        })
+        .catch(() => {
+          pointController.shake();
+        });
     } else {
       this._api.updatePoint(newData, oldData.id)
         .then((point) => {
           const isSuccess = this._pointsModel.updatePoint(point, oldData.id);
 
           if (isSuccess) {
-            this._updatePoints();
+            this._update();
           }
+        })
+        .catch(() => {
+          pointController.shake();
         });
     }
+  }
 
+  _update() {
     this._updatePoints();
     this._onSortTypeChange(this._sortType);
 

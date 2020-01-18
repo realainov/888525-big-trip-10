@@ -51,6 +51,24 @@ export default class API {
       .then((point) => new PointModel(point));
   }
 
+  addPoint(pointModel) {
+    return this._load({
+      path: `points`,
+      method: Method.POST,
+      body: JSON.stringify(pointModel.toRAW()),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json())
+      .then((point) => new PointModel(point));
+  }
+
+  deletePoint(id) {
+    return this._load({
+      path: `points/${id}`,
+      method: Method.DELETE
+    });
+  }
+
   _load({path, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
