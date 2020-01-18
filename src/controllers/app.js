@@ -40,7 +40,7 @@ export default class AppController {
       this._api.getDestinations(),
       this._api.getTypesOffers()
     ]).then((values) => {
-      this._pointsModel = new PointsModel(...values);
+      this._pointsModel = new PointsModel(values[0]);
       this._routeController = new RouteController(this._tripInfoElement, this._pointsModel);
       this._routeController.render();
       this._filterController = new FilterController(this._tripControlsHeaderElements[1], this._pointsModel);

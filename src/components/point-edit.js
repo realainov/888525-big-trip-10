@@ -83,7 +83,11 @@ const createTemplate = (point, tempPoint, destinations, typesOffers, isAddingMod
   const offers = Repository.getOffers(currentType);
 
   offers.forEach((offer) => {
-    offer[`isChecked`] = !!selectedOffers.find((selectedOffer) => selectedOffer.title === offer.title);
+    const equalOffer = selectedOffers.find((selectedOffer) => selectedOffer.title === offer.title);
+
+    offer[`isChecked`] = !!equalOffer;
+
+    offer.price = equalOffer ? equalOffer.price : offer.price;
   });
 
   const city = he.encode(currentDestination.name);
