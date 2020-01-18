@@ -132,9 +132,11 @@ export default class PointController {
 
   shake() {
     this._pointEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._pointEditComponent.getElement().style.boxShadow = `0 11px 20px rgba(220, 20, 60, 0.2)`;
 
     setTimeout(() => {
       this._pointEditComponent.getElement().style.animation = ``;
+      this._pointEditComponent.getElement().style.boxShadow = ``;
 
       this._pointEditComponent.setExternalData({
         saveButtonText: `Save`,
