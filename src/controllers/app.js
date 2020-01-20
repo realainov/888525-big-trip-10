@@ -63,6 +63,11 @@ export default class AppController {
       this._apiWithProvider.getDestinations(),
       this._apiWithProvider.getTypesOffers()
     ]).then((values) => {
+      const preloaderEl = document.querySelector(`#preloader`);
+
+      preloaderEl.classList.add(`hidden`);
+      preloaderEl.classList.remove(`visible`);
+
       this._pointsModel = new PointsModel(values[0]);
       this._routeController = new RouteController(this._tripInfoElement, this._pointsModel);
       this._routeController.render();
