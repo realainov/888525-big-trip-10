@@ -314,7 +314,6 @@ export default class PointEditComponent extends AbstractSmartComponent {
       dateFormat: `d/m/Y H:i`,
       altInput: true,
       altFormat: `d/m/Y H:i`,
-      minDate: startDateElement.value,
       mode: `single`
     });
 
@@ -369,7 +368,7 @@ export default class PointEditComponent extends AbstractSmartComponent {
     startDateElement.addEventListener(`change`, () => {
       this._tempPoint.date.from = this._startFlatpickr.selectedDates[0];
 
-      this.rerender();
+      this._checkAvailabilityEditFormSubmit();
     });
 
     const endDateElement = this.findElement(`#event-end-time-1`);
@@ -377,7 +376,7 @@ export default class PointEditComponent extends AbstractSmartComponent {
     endDateElement.addEventListener(`change`, () => {
       this._tempPoint.date.to = this._endFlatpickr.selectedDates[0];
 
-      this.rerender();
+      this._checkAvailabilityEditFormSubmit();
     });
 
     const eventPriceElement = this.findElement(`#event-price-1`);

@@ -8,7 +8,7 @@ const calculateTotalPrice = (points) => {
     totalPrice += +point.price;
 
     point.offers.forEach((offer) => {
-      totalPrice = offer.isChecked ? totalPrice + +offer.price : totalPrice;
+      totalPrice += +offer.price;
     });
   });
 
