@@ -1,5 +1,5 @@
-import PointModel from './models/point.js';
-import Repository from './repository';
+import PointModel from '../models/point.js';
+import Repository from '../models/repository';
 
 const Method = {
   GET: `GET`,
@@ -31,16 +31,24 @@ export default class API {
   getDestinations() {
     return this._load({path: `destinations`})
       .then((response) => response.json())
-      .then((destinations) => Repository.setDestinations(destinations));
+      .then((destinations) => {
+        Repository.setDestinations(destinations);
+
+        return destinations;
+      });
   }
 
   getTypesOffers() {
     return this._load({path: `offers`})
       .then((response) => response.json())
-      .then((typesOffers) => Repository.setTypesOffers(typesOffers));
+      .then((typesOffers) => {
+        Repository.setTypesOffers(typesOffers);
+
+        return typesOffers;
+      });
   }
 
-  updatePoint(pointModel, id) {
+  updatePoint(id, pointModel) {
     return this._load({
       path: `points/${id}`,
       method: Method.PUT,
@@ -67,6 +75,16 @@ export default class API {
       path: `points/${id}`,
       method: Method.DELETE
     });
+  }
+
+  sync(data) {
+    return this._load({
+      path: `points/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json());
   }
 
   _load({path, method = Method.GET, body = null, headers = new Headers()}) {

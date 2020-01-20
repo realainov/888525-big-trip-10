@@ -45,7 +45,7 @@ export default class Points {
     this._callHandlers(this._dataChangeHandlers);
   }
 
-  updatePoint(point, id) {
+  updatePoint(id, point) {
     const index = this._points.findIndex((item) => item.id === id);
 
     if (index === -1) {

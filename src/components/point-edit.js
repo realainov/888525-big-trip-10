@@ -1,4 +1,4 @@
-import Repository from '../repository';
+import Repository from '../models/repository';
 import AbstractSmartComponent from './abstract-smart-component';
 import {makeWordCapitalize, makeWordWithDashes, formatTime, formatDate} from '../utils/common';
 import {TYPE_GROUPS, typeMap, Mode} from '../const';
@@ -6,6 +6,8 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
 import lodash from 'lodash';
+
+const DEBOUNCE_TIMEOUT = 500;
 
 const DefaultData = {
   deleteButtonText: `Delete`,
@@ -388,11 +390,11 @@ export default class PointEditComponent extends AbstractSmartComponent {
 
     const eventFavoriteButtonElement = this.findElement(`#event-favorite-1`);
 
-    eventFavoriteButtonElement.addEventListener(`change`, () => {
+    eventFavoriteButtonElement.addEventListener(`change`, lodash.debounce(() => {
       this._point.isFavorite = !this._point.isFavorite;
 
       this.rerender();
-    });
+    }, DEBOUNCE_TIMEOUT));
 
     this.findElements(`.event__offer-selector`).forEach((element) => {
       element.addEventListener(`change`, () => {

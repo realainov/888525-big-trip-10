@@ -209,9 +209,9 @@ export default class TripController {
           pointController.shake();
         });
     } else {
-      this._api.updatePoint(newData, oldData.id)
+      this._api.updatePoint(oldData.id, newData)
         .then((point) => {
-          const isSuccess = this._pointsModel.updatePoint(point, oldData.id);
+          const isSuccess = this._pointsModel.updatePoint(oldData.id, point);
 
           if (isSuccess) {
             this._update();
