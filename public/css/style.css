@@ -965,23 +965,3 @@ input[type='number'] {
 
 .statistics__item:not(:last-child) {
   margin-bottom: 78px; }
-
-#preloader {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 999;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  background: #22A7F0 url('http://hello-site.ru//main/images/preloads/oval.svg') no-repeat center center; }
-
-.visible {
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 0.5s ease-out; }
-
-.hidden {
-  visibility: hidden;
-  opacity: 0;
-  transition: visibility 0s 0.5s, opacity 0.5s ease-out; }
