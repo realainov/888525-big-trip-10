@@ -1,5 +1,5 @@
 import PointModel from '../models/point.js';
-import Repository from '../models/repository';
+import RepositoryModel from '../models/repository';
 
 const Method = {
   GET: `GET`,
@@ -32,7 +32,7 @@ export default class API {
     return this._load({path: `destinations`})
       .then((response) => response.json())
       .then((destinations) => {
-        Repository.setDestinations(destinations);
+        RepositoryModel.setDestinations(destinations);
 
         return destinations;
       });
@@ -42,7 +42,7 @@ export default class API {
     return this._load({path: `offers`})
       .then((response) => response.json())
       .then((typesOffers) => {
-        Repository.setTypesOffers(typesOffers);
+        RepositoryModel.setTypesOffers(typesOffers);
 
         return typesOffers;
       });

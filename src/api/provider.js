@@ -1,5 +1,5 @@
 import PointModel from '../models/point';
-import Repository from '../models/repository';
+import RepositoryModel from '../models/repository';
 import nanoid from 'nanoid';
 
 const getSyncedPoints = (items) => items.filter(({success}) => success).map(({payload}) => payload.point);
@@ -43,7 +43,7 @@ export default class Provider {
 
     this._isSynchronized = false;
 
-    return Promise.resolve(Repository.setDestinations(storeDestinations));
+    return Promise.resolve(RepositoryModel.setDestinations(storeDestinations));
   }
 
   getTypesOffers() {
@@ -59,7 +59,7 @@ export default class Provider {
 
     this._isSynchronized = false;
 
-    return Promise.resolve(Repository.setTypesOffers(storeTypesOffers));
+    return Promise.resolve(RepositoryModel.setTypesOffers(storeTypesOffers));
   }
 
   addPoint(pointModel) {
