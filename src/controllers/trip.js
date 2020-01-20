@@ -187,8 +187,8 @@ export default class TripController {
         this._callHandlers(this._dataChangeHandlers);
       } else {
         this._api.addPoint(newData)
-          .then(() => {
-            this._pointsModel.addPoint(newData);
+          .then((pointModel) => {
+            this._pointsModel.addPoint(pointModel);
 
             pointController.destroy();
 

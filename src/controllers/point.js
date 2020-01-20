@@ -66,11 +66,9 @@ export default class PointController {
     this._pointEditComponent.setEditFormSubmitHandler((evt) => {
       evt.preventDefault();
 
-      this._pointEditComponent.setExternalData({
-        saveButtonText: `Saving...`,
-        isDisabledSaveButton: true,
-        isDisabledDeleteButton: true
-      });
+      this._pointEditComponent.setDisabledSaveButton(true);
+      this._pointEditComponent.setDisabledDeleteButton(true);
+      this._pointEditComponent.setSaveButtonText(`Saving...`);
 
       const data = new PointModel(this._pointEditComponent.getFormData());
 
@@ -80,11 +78,9 @@ export default class PointController {
     });
 
     this._pointEditComponent.setDeleteButtonClickHandler(() => {
-      this._pointEditComponent.setExternalData({
-        deleteButtonText: `Deleting...`,
-        isDisabledSaveButton: true,
-        isDisabledDeleteButton: true
-      });
+      this._pointEditComponent.setDisabledSaveButton(true);
+      this._pointEditComponent.setDisabledDeleteButton(true);
+      this._pointEditComponent.setDeleteButtonText(`Deleting...`);
 
       this._onDataChange(this, point, null);
     });
@@ -138,12 +134,10 @@ export default class PointController {
       this._pointEditComponent.getElement().style.animation = ``;
       this._pointEditComponent.getElement().style.boxShadow = ``;
 
-      this._pointEditComponent.setExternalData({
-        saveButtonText: `Save`,
-        deleteButtonText: `Delete`,
-        isDisabledSaveButton: false,
-        isDisabledDeleteButton: false
-      });
+      this._pointEditComponent.setDisabledSaveButton(false);
+      this._pointEditComponent.setDisabledDeleteButton(false);
+      this._pointEditComponent.setSaveButtonText(`Save`);
+      this._pointEditComponent.setDeleteButtonText(`Delete`);
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 

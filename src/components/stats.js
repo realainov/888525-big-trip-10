@@ -17,8 +17,7 @@ const renderMoneyStats = (containerElement, points) => {
     }],
     chart: {
       type: `bar`,
-      height: 350,
-      fontFamily: `inherit`
+      height: `auto`
     },
     plotOptions: {
       bar: {
@@ -70,7 +69,7 @@ const renderTrasportStats = (containerElement, points) => {
     }],
     chart: {
       type: `bar`,
-      height: 350
+      height: `auto`
     },
     plotOptions: {
       bar: {
@@ -117,7 +116,7 @@ const renderTimeSpendStats = (containerElement, points) => {
     }],
     chart: {
       type: `bar`,
-      height: 350
+      height: `auto`
     },
     plotOptions: {
       bar: {

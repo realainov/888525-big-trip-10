@@ -1,4 +1,4 @@
-export default class Repository {
+export default class RepositoryModel {
   constructor() {
     this._destinations = null;
     this._typesOffers = null;
@@ -28,10 +28,10 @@ export default class Repository {
   }
 
   static setDestinations(destinations) {
-    Repository._destinations = destinations;
+    RepositoryModel._destinations = destinations;
   }
 
   static setTypesOffers(typesOffers) {
-    Repository._typesOffers = typesOffers;
+    RepositoryModel._typesOffers = typesOffers;
   }
 }

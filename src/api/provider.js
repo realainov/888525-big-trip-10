@@ -64,7 +64,7 @@ export default class Provider {
 
   addPoint(pointModel) {
     if (this._isOnLine()) {
-      return this._api.createPoint(pointModel)
+      return this._api.addPoint(pointModel)
         .then((newPointModel) => {
           this._pointsStore.setItem(newPointModel.id, newPointModel.toRAW());
 

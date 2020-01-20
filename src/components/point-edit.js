@@ -1,4 +1,4 @@
-import Repository from '../models/repository';
+import RepositoryModel from '../models/repository';
 import AbstractSmartComponent from './abstract-smart-component';
 import {makeWordCapitalize, makeWordWithDashes, formatTime, formatDate} from '../utils/common';
 import {TYPE_GROUPS, typeMap, Mode} from '../const';
@@ -8,13 +8,6 @@ import he from 'he';
 import lodash from 'lodash';
 
 const DEBOUNCE_TIMEOUT = 500;
-
-const DefaultData = {
-  deleteButtonText: `Delete`,
-  saveButtonText: `Save`,
-  isDisabledDeleteButton: false,
-  isDisabledSaveButton: false
-};
 
 const createOffersMarkup = (offers) => {
   return offers
@@ -84,12 +77,12 @@ const createCityMarkup = (cities) => {
     .join(`\n`);
 };
 
-const createTemplate = (point, tempPoint, externalData, isAddingMode) => {
+const createTemplate = (point, tempPoint, isAddingMode) => {
   const {isFavorite} = point;
   const {destination, offers: selectedOffers, price: currentPrice, date, type: currentType} = tempPoint;
 
-  const cities = Repository.getCities();
-  const offers = Repository.getOffers(currentType);
+  const cities = RepositoryModel.getCities();
+  const offers = RepositoryModel.getOffers(currentType);
 
   offers.forEach((offer) => {
     const equalOffer = selectedOffers.find((selectedOffer) => selectedOffer.title === offer.title);
@@ -112,12 +105,6 @@ const createTemplate = (point, tempPoint, externalData, isAddingMode) => {
   const offersMarkup = createOffersMarkup(offers);
   const photosMarkup = createPhotosMarkup(destination.pictures);
   const cityMarkup = createCityMarkup(cities, city);
-
-  const isDisabledSaveButton = !date.from || !date.to || date.from > date.to || externalData.isDisabledSaveButton;
-  const isDisabledDeleteButton = externalData.isDisabledDeleteButton;
-
-  const deleteButtonText = externalData.deleteButtonText;
-  const saveButtonText = externalData.saveButtonText;
 
   return (
     `<form class="event  event--edit ${isAddingMode ? `trip-events__item` : ``}" action="#" method="post">
@@ -164,8 +151,8 @@ const createTemplate = (point, tempPoint, externalData, isAddingMode) => {
           <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabledSaveButton ? `disabled` : ``}>${saveButtonText}</button>
-        <button class="event__reset-btn" type="reset" ${isDisabledDeleteButton ? `disabled` : ``}>${isAddingMode ? `Cancel` : deleteButtonText}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        <button class="event__reset-btn" type="reset">${isAddingMode ? `Cancel` : `Delete`}</button>
 
         <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-1">
@@ -214,7 +201,6 @@ export default class PointEditComponent extends AbstractSmartComponent {
     this._mode = mode;
 
     this._tempPoint = lodash.cloneDeep(this._point);
-    this._externalData = DefaultData;
 
     this._rollupButtonClickHandler = null;
     this._editFormSubmitHandler = null;
@@ -231,7 +217,7 @@ export default class PointEditComponent extends AbstractSmartComponent {
   getTemplate() {
     const isClearRollupButton = this._mode === Mode.ADDING;
 
-    return createTemplate(this._point, this._tempPoint, this._externalData, isClearRollupButton);
+    return createTemplate(this._point, this._tempPoint, isClearRollupButton);
   }
 
   recoveryEventListeners() {
@@ -262,10 +248,6 @@ export default class PointEditComponent extends AbstractSmartComponent {
     return this._parseFormData(formData);
   }
 
-  setExternalData(data) {
-    this._externalData = Object.assign({}, DefaultData, data);
-  }
-
   setRollupButtonClickHandler(handler) {
     if (handler) {
       this.findElement(`.event__rollup-btn`).addEventListener(`click`, handler);
@@ -286,13 +268,31 @@ export default class PointEditComponent extends AbstractSmartComponent {
     this._deleteButtonClickHandler = handler;
   }
 
+  setDisabledSaveButton(bool) {
+    this.findElement(`.event__save-btn`).disabled = bool;
+  }
+
+  setDisabledDeleteButton(bool) {
+    this.findElement(`.event__reset-btn`).disabled = bool;
+  }
+
+  setSaveButtonText(text) {
+    this.findElement(`.event__save-btn`).textContent = text;
+  }
+
+  setDeleteButtonText(text) {
+    this.findElement(`.event__reset-btn`).textContent = text;
+  }
+
   _checkAvailabilityEditFormSubmit() {
     const eventDestinationValue = this.findElement(`#event-destination-1`).value;
     const eventPriceValue = this.findElement(`#event-price-1`).value;
+    const startDateValue = this._startFlatpickr.selectedDates[0];
+    const endDateValue = this._endFlatpickr.selectedDates[0];
 
     const saveButtonElement = this.findElement(`.event__save-btn`);
 
-    saveButtonElement.disabled = !(eventDestinationValue && eventPriceValue);
+    saveButtonElement.disabled = !eventDestinationValue || !eventPriceValue || !startDateValue || !endDateValue || startDateValue > endDateValue;
   }
 
   _applyFlatpickr() {
@@ -346,10 +346,10 @@ export default class PointEditComponent extends AbstractSmartComponent {
 
     eventDestinationElement.addEventListener(`input`, () => {
       if (eventDestinationElement.value) {
-        if (Repository.getDestination(eventDestinationElement.value) === undefined) {
+        if (RepositoryModel.getDestination(eventDestinationElement.value) === undefined) {
           eventDestinationElement.value = this._tempPoint.destination.name;
         } else {
-          this._tempPoint.destination = Repository.getDestination(eventDestinationElement.value);
+          this._tempPoint.destination = RepositoryModel.getDestination(eventDestinationElement.value);
 
           this.rerender();
         }
