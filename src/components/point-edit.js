@@ -268,11 +268,8 @@ export default class PointEditComponent extends AbstractSmartComponent {
     this._deleteButtonClickHandler = handler;
   }
 
-  setDisabledSaveButton(bool) {
+  setDisabledButtons(bool) {
     this.findElement(`.event__save-btn`).disabled = bool;
-  }
-
-  setDisabledDeleteButton(bool) {
     this.findElement(`.event__reset-btn`).disabled = bool;
   }
 

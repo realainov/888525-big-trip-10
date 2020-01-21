@@ -1,13 +1,12 @@
 export default class Store {
-  constructor(key) {
-    this._storage = window.localStorage;
-
-    this._storegeKey = key;
+  constructor(key, storage) {
+    this._key = key;
+    this._storage = storage;
   }
 
   getAll() {
     try {
-      return JSON.parse(this._storage.getItem(this._storegeKey));
+      return JSON.parse(this._storage.getItem(this._key));
     } catch (err) {
       return {};
     }
@@ -16,7 +15,7 @@ export default class Store {
   setItem(key, value) {
     const store = this.getAll();
 
-    this._storage.setItem(this._storegeKey, JSON.stringify(Object.assign({}, store, {[key]: value})));
+    this._storage.setItem(this._key, JSON.stringify(Object.assign({}, store, {[key]: value})));
   }
 
   removeItem(key) {
@@ -24,6 +23,6 @@ export default class Store {
 
     delete store[key];
 
-    this._storage.setItem(this._storegeKey, JSON.stringify(Object.assign({}, store)));
+    this._storage.setItem(this._key, JSON.stringify(Object.assign({}, store)));
   }
 }

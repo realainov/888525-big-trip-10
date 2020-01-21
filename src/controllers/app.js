@@ -1,4 +1,4 @@
-import API from '../api';
+import API from '../api/api';
 import Store from '../api/store.js';
 import Provider from '../api/provider.js';
 import PointsModel from '../models/points';
@@ -16,9 +16,9 @@ const AUTHORIZATION = `Basic eo0w590ik29889n`;
 export default class AppController {
   constructor() {
     this._api = new API(URL, AUTHORIZATION);
-    this._pointsStore = new Store(`big-trip-points-v1`);
-    this._destinationsStore = new Store(`big-trip-destinations-v1`);
-    this._typesOffersStore = new Store(`big-trip-types-offers-v1`);
+    this._pointsStore = new Store(`big-trip-points-v1`, window.localStorage);
+    this._destinationsStore = new Store(`big-trip-destinations-v1`, window.localStorage);
+    this._typesOffersStore = new Store(`big-trip-types-offers-v1`, window.localStorage);
     this._apiWithProvider = new Provider(this._api, this._pointsStore, this._destinationsStore, this._typesOffersStore);
 
     this._pointsModel = null;
@@ -41,7 +41,7 @@ export default class AppController {
     this._menuComponent.setMenuItemClickHandler(this._onMenuItemClick);
   }
 
-  render() {
+  run() {
     window.addEventListener(`load`, () => {
       navigator.serviceWorker.register(`/sw.js`);
     });

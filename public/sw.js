@@ -21,9 +21,9 @@ self.addEventListener(`install`, (evt) => {
         `/img/icons/train.png`,
         `/img/icons/transport.png`,
         `/img/icons/trip.png`,
-        '/img/header-bg.png',
-        '/img/header-bg@2x.png',
-        '/img/logo.png'
+        `/img/header-bg.png`,
+        `/img/header-bg@2x.png`,
+        `/img/logo.png`
       ]);
     })
   );
@@ -61,8 +61,7 @@ const fetchHandler = (evt) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(request, clonedResponse));
 
           return response;
-        }
-      );
+        });
     })
   );
 };

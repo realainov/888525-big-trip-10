@@ -25,8 +25,6 @@ export default class Provider {
 
     const storePoints = Object.values(this._pointsStore.getAll());
 
-    this._isSynchronized = false;
-
     return Promise.resolve(storePoints.map((point) => new PointModel(point)));
   }
 
@@ -41,8 +39,6 @@ export default class Provider {
 
     const storeDestinations = Object.values(this._destinationsStore.getAll());
 
-    this._isSynchronized = false;
-
     return Promise.resolve(RepositoryModel.setDestinations(storeDestinations));
   }
 
@@ -56,8 +52,6 @@ export default class Provider {
     }
 
     const storeTypesOffers = Object.values(this._typesOffersStore.getAll());
-
-    this._isSynchronized = false;
 
     return Promise.resolve(RepositoryModel.setTypesOffers(storeTypesOffers));
   }
