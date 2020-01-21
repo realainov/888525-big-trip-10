@@ -16,15 +16,15 @@ const createTemplate = (points, index) => {
         <ul class="trip-events__list"></ul>
       </li>`
     );
-  } else {
-    return (
-      `<li class="trip-days__item day">
-        <div class="day__info"></div>
-  
-        <ul class="trip-events__list"></ul>
-      </li>`
-    );
   }
+
+  return (
+    `<li class="trip-days__item day">
+      <div class="day__info"></div>
+
+      <ul class="trip-events__list"></ul>
+    </li>`
+  );
 };
 
 export default class DayComponent extends AbstractComponent {

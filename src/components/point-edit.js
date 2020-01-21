@@ -104,7 +104,7 @@ const createTemplate = (point, tempPoint, isAddingMode) => {
   const typesMarkup = createTypeGroupMarkup(TYPE_GROUPS, currentType);
   const offersMarkup = createOffersMarkup(offers);
   const photosMarkup = createPhotosMarkup(destination.pictures);
-  const cityMarkup = createCityMarkup(cities, city);
+  const cityMarkup = createCityMarkup(cities);
 
   return (
     `<form class="event  event--edit ${isAddingMode ? `trip-events__item` : ``}" action="#" method="post">
@@ -279,6 +279,16 @@ export default class PointEditComponent extends AbstractSmartComponent {
 
   setDeleteButtonText(text) {
     this.findElement(`.event__reset-btn`).textContent = text;
+  }
+
+  setErrorView(isErrorView, timeout) {
+    if (isErrorView) {
+      this.getElement().style.animation = `shake ${timeout / 1000}s`;
+      this.getElement().style.boxShadow = `0 11px 20px rgba(220, 20, 60, 0.2)`;
+    } else {
+      this.getElement().style.animation = ``;
+      this.getElement().style.boxShadow = ``;
+    }
   }
 
   _checkAvailabilityEditFormSubmit() {

@@ -4,14 +4,16 @@ import Provider from '../api/provider.js';
 import PointsModel from '../models/points';
 import MenuComponent from '../components/menu';
 import StatsComponent from '../components/stats';
+import AddButtonComponent from '../components/add-button';
 import TripController from './trip';
 import FilterController from './filter';
 import RouteController from './route';
 import {render, remove, RenderPosition} from '../utils/render';
 import {MenuItems} from '../const';
+import {generateString} from '../utils/common';
 
 const URL = `https://htmlacademy-es-10.appspot.com/big-trip`;
-const AUTHORIZATION = `Basic eo0w590ik29889n`;
+const AUTHORIZATION = `Basic ${generateString(6)}`;
 
 export default class AppController {
   constructor() {
@@ -23,6 +25,7 @@ export default class AppController {
 
     this._pointsModel = null;
 
+    this._addButtonComponent = new AddButtonComponent();
     this._menuComponent = new MenuComponent();
     this._statsComponent = null;
 
@@ -31,7 +34,6 @@ export default class AppController {
     this._routeController = null;
 
     this._tripInfoElement = document.querySelector(`.trip-main`);
-    this._addPointButtonElement = document.querySelector(`.trip-main__event-add-btn`);
     this._tripControlsHeaderElements = document.querySelectorAll(`.trip-controls h2`);
     this._pageContainerElement = document.querySelector(`main .page-body__container`);
 
@@ -66,6 +68,17 @@ export default class AppController {
       this._pointsModel = new PointsModel(values[0]);
       this._routeController = new RouteController(this._tripInfoElement, this._pointsModel);
       this._routeController.render();
+
+      render(this._tripInfoElement, this._addButtonComponent);
+
+      this._addButtonComponent.setClickHandler(() => {
+        this._filterController.render();
+        this._tripController.render();
+        this._tripController.createPoint();
+
+        this._addButtonComponent.setDisabled(true);
+      });
+
       this._filterController = new FilterController(this._tripControlsHeaderElements[1], this._pointsModel);
       this._filterController.render();
 
@@ -75,14 +88,6 @@ export default class AppController {
       this._tripController.setDataChangeHandler(this._onDataChange);
 
       render(this._tripControlsHeaderElements[0], this._menuComponent, RenderPosition.AFTEREND);
-
-      this._addPointButtonElement.addEventListener(`click`, () => {
-        this._filterController.render();
-        this._tripController.render();
-        this._tripController.createPoint();
-
-        this._addPointButtonElement.disabled = true;
-      });
     });
   }
 
@@ -96,7 +101,7 @@ export default class AppController {
         this._filterController.render();
         this._tripController.render();
 
-        this._addPointButtonElement.disabled = false;
+        this._addButtonComponent.setDisabled(false);
 
         break;
       case MenuItems.STATS:
@@ -111,13 +116,13 @@ export default class AppController {
 
         this._statsComponent.renderCharts();
 
-        this._addPointButtonElement.disabled = true;
+        this._addButtonComponent.setDisabled(true);
 
         break;
     }
   }
 
   _onDataChange() {
-    this._addPointButtonElement.disabled = false;
+    this._addButtonComponent.setDisabled(false);
   }
 }

@@ -2,9 +2,11 @@ import AbstractComponent from './abstract-component';
 import {calculateDuration, formatTime, formatDateTime} from '../utils/common';
 import {typeMap} from '../const';
 
+const MAX_OFFERS_COUNT = 3;
+
 const createOffersMarkup = (offers) => {
   return offers
-    .slice(0, 3)
+    .slice(0, MAX_OFFERS_COUNT)
     .map((offer) => {
       return (
         `<li class="event__offer">

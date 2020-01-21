@@ -59,8 +59,18 @@ export const isPastPoint = (date) => {
 };
 
 export const isOneDay = (dateA, dateB = new Date()) => {
-  const a = moment(dateA);
-  const b = moment(dateB);
+  const momentDateA = moment(dateA);
+  const momentDateB = moment(dateB);
 
-  return a.diff(b, `days`) === 0 && dateA.getDate() === dateB.getDate();
+  return momentDateA.diff(momentDateB, `days`) === 0 && dateA.getDate() === dateB.getDate();
+};
+
+export const generateString = (quantity) => {
+  let rnd = ``;
+
+  while (rnd.length < quantity) {
+    rnd += Math.random().toString(36).substring(2);
+  }
+
+  return rnd.substring(0, quantity);
 };

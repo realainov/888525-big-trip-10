@@ -182,12 +182,12 @@ export default class Stats extends AbstractComponent {
 
   renderCharts() {
     const moneyElement = this.findElement(`.statistics__item--money`);
-    const transportCtx = this.findElement(`.statistics__item--transport`);
-    const timeSpendCtx = this.findElement(`.statistics__item--time-spend`);
+    const transportElement = this.findElement(`.statistics__item--transport`);
+    const timeSpendElement = this.findElement(`.statistics__item--time-spend`);
 
     this._moneyStats = renderMoneyStats(moneyElement, this._points);
-    this._transportStats = renderTrasportStats(transportCtx, this._points);
-    this._timeSpendStats = renderTimeSpendStats(timeSpendCtx, this._points);
+    this._transportStats = renderTrasportStats(transportElement, this._points);
+    this._timeSpendStats = renderTimeSpendStats(timeSpendElement, this._points);
 
     this._moneyStats.render();
     this._transportStats.render();
